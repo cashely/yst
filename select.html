@@ -1,0 +1,254 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,minimal-ui" />
+    <meta charset="utf-8" />
+    <meta name="x5-fullscreen" content="true">
+    <meta name="full-screen" content="yes">
+    <title>自选</title>
+    <link href="lib/light7/css/light7.min.css" rel="stylesheet" />
+    <link href="lib/fontAw/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="dist/css/all.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div class="page">
+      <!-- 头部筛选 start -->
+      <header class="bar bar-nav select-header">
+        <div class="row no-gutter">
+          <div class="col-60">
+            <div class="buttons-row">
+              <a href="add.html" class="external button">添加</a></a>
+              <a href="#" class="tab-link button">编辑</a>
+              <a href="#" class="tab-link button">医院列表</a>
+            </div>
+          </div>
+          <div class="col-40">
+            <div class="calendar-header">
+              <i class="fa fa-calendar"></i>
+              <input type="text" class="date-input" id="my-input"/>
+            </div>
+          </div>
+        </div>
+      </header>
+      <!-- 头部筛选 end -->
+      <!-- 二级菜单 start -->
+      <div class="bar bar-header-secondary select-header-secondary">
+        <div class="row no-gutter table-row-header no-edit">
+          <div class="col-4-ds">地市</div>
+          <div class="col-5-tym">通用名</div>
+          <div class="col-4-scgm">市场规模</div>
+          <div class="col-4-zdf">涨跌幅<i class="fa fa-sort"></i></div>
+          <div class="yxyy" onClick="hideSblings(this)">
+            <a href="#">已选医院</a>
+            <a href="#" class="hidden">解锁医院</a>
+          </div>
+        </div>
+      </div>
+      <!-- 二级菜单 end -->
+      <div class="content content has-secondary-bar has-footer-secondary infinite-scroll" data-distance="100">
+        <div class="center">
+          <div class="list-block item-pean-horizontal">
+            <ul class="table-row">
+              <li class="item-content  no-edit yl">
+                <div class="item-inner">
+                  <div class="col-4-ds"><span>广州</span></div>
+                  <div class="col-5-tym">阿莫克拉<i class="bradge">口服</i></div>
+                  <div class="col-4-scgm">13.21%</div>
+                  <div class="col-4-zdf z">+1.45%</div>
+                  <div class="yxyy text-center"><a href="#">5/5</a></div>
+                  <div class="yxyy hidden"><a href="#">5/150</a></div>
+                </div>
+              </li>
+            </ul>
+          </div>
+          <div class="list-block item-pean-horizontal">
+            <ul class="table-row">
+              <li class="item-content  no-edit">
+                <div class="item-inner">
+                  <div class="col-4-ds"><span>广州</span></div>
+                  <div class="col-5-tym">阿莫克拉<i class="bradge">口服</i></div>
+                  <div class="col-4-scgm">13.21%</div>
+                  <div class="col-4-zdf z">+1.45%</div>
+                  <div class="yxyy"><a href="#">5/5</a></div>
+                  <div class="yxyy hidden"><a href="#">5/150</a></div>
+                </div>
+              </li>
+              <li class="item-content  no-edit">
+                <div class="item-inner">
+                  <div class="col-4-ds"><span>广州</span></div>
+                  <div class="col-5-tym">阿莫克拉<i class="bradge">口服</i></div>
+                  <div class="col-4-scgm">13.21%</div>
+                  <div class="col-4-zdf z">+1.45%</div>
+                  <div class="yxyy"><a href="#">5/5</a></div>
+                  <div class="yxyy hidden"><a href="#">5/150</a></div>
+                </div>
+              </li>
+              <li class="item-content  no-edit">
+                <div class="item-inner">
+                  <div class="col-4-ds"><span>广州</span></div>
+                  <div class="col-5-tym">阿莫克拉<i class="bradge">口服</i></div>
+                  <div class="col-4-scgm">13.21%</div>
+                  <div class="col-4-zdf z">+1.45%</div>
+                  <div class="yxyy"><a href="#">5/5</a></div>
+                  <div class="yxyy hidden"><a href="#">5/150</a></div>
+                </div>
+              </li>
+              <li class="item-content  no-edit">
+                <div class="item-inner">
+                  <div class="col-4-ds"><span>广州</span></div>
+                  <div class="col-5-tym">阿莫克拉<i class="bradge">口服</i></div>
+                  <div class="col-4-scgm">13.21%</div>
+                  <div class="col-4-zdf z">+1.45%</div>
+                  <div class="yxyy"><a href="#">5/5</a></div>
+                  <div class="yxyy hidden"><a href="#">5/150</a></div>
+                </div>
+              </li>
+              <li class="item-content  no-edit">
+                <div class="item-inner">
+                  <div class="col-4-ds"><span>广州</span></div>
+                  <div class="col-5-tym">阿莫克拉<i class="bradge">口服</i></div>
+                  <div class="col-4-scgm">13.21%</div>
+                  <div class="col-4-zdf z">+1.45%</div>
+                  <div class="yxyy"><a href="#">5/5</a></div>
+                  <div class="yxyy hidden"><a href="#">5/150</a></div>
+                </div>
+              </li>
+              <li class="item-content  no-edit">
+                <div class="item-inner">
+                  <div class="col-4-ds"><span>广州</span></div>
+                  <div class="col-5-tym">阿莫克拉<i class="bradge">口服</i></div>
+                  <div class="col-4-scgm">13.21%</div>
+                  <div class="col-4-zdf z">+1.45%</div>
+                  <div class="yxyy"><a href="#">5/5</a></div>
+                  <div class="yxyy hidden"><a href="#">5/150</a></div>
+                </div>
+              </li>
+              <li class="item-content  no-edit">
+                <div class="item-inner">
+                  <div class="col-4-ds"><span>广州</span></div>
+                  <div class="col-5-tym">阿莫克拉<i class="bradge">口服</i></div>
+                  <div class="col-4-scgm">13.21%</div>
+                  <div class="col-4-zdf z">+1.45%</div>
+                  <div class="yxyy"><a href="#">5/5</a></div>
+                  <div class="yxyy hidden"><a href="#">5/150</a></div>
+                </div>
+              </li>
+              <li class="item-content  no-edit">
+                <div class="item-inner">
+                  <div class="col-4-ds"><span>广州</span></div>
+                  <div class="col-5-tym">阿莫克拉<i class="bradge">口服</i></div>
+                  <div class="col-4-scgm">13.21%</div>
+                  <div class="col-4-zdf z">+1.45%</div>
+                  <div class="yxyy"><a href="#">5/5</a></div>
+                  <div class="yxyy hidden"><a href="#">5/150</a></div>
+                </div>
+              </li>
+              <li class="item-content  no-edit">
+                <div class="item-inner">
+                  <div class="col-4-ds"><span>广州</span></div>
+                  <div class="col-5-tym">阿莫克拉<i class="bradge">口服</i></div>
+                  <div class="col-4-scgm">13.21%</div>
+                  <div class="col-4-zdf z">+1.45%</div>
+                  <div class="yxyy"><a href="#">5/5</a></div>
+                  <div class="yxyy hidden"><a href="#">5/150</a></div>
+                </div>
+              </li>
+              <li class="item-content  no-edit">
+                <div class="item-inner">
+                  <div class="col-4-ds"><span>广州</span></div>
+                  <div class="col-5-tym">阿莫克拉<i class="bradge">口服</i></div>
+                  <div class="col-4-scgm">13.21%</div>
+                  <div class="col-4-zdf z">+1.45%</div>
+                  <div class="yxyy"><a href="#">5/5</a></div>
+                  <div class="yxyy hidden"><a href="#">5/150</a></div>
+                </div>
+              </li>
+              <li class="item-content  no-edit">
+                <div class="item-inner">
+                  <div class="col-4-ds"><span>广州</span></div>
+                  <div class="col-5-tym">阿莫克拉<i class="bradge">口服</i></div>
+                  <div class="col-4-scgm">13.21%</div>
+                  <div class="col-4-zdf z">+1.45%</div>
+                  <div class="yxyy"><a href="#">5/5</a></div>
+                  <div class="yxyy hidden"><a href="#">5/150</a></div>
+                </div>
+              </li>
+              <li class="item-content  no-edit">
+                <div class="item-inner">
+                  <div class="col-4-ds"><span>广州</span></div>
+                  <div class="col-5-tym">阿莫克拉<i class="bradge">口服</i></div>
+                  <div class="col-4-scgm">13.21%</div>
+                  <div class="col-4-zdf z">+1.45%</div>
+                  <div class="yxyy"><a href="#">5/5</a></div>
+                  <div class="yxyy hidden"><a href="#">5/150</a></div>
+                </div>
+              </li>
+              <li class="item-content  no-edit">
+                <div class="item-inner">
+                  <div class="col-4-ds"><span>广州</span></div>
+                  <div class="col-5-tym">阿莫克拉<i class="bradge">口服</i></div>
+                  <div class="col-4-scgm">13.21%</div>
+                  <div class="col-4-zdf z">+1.45%</div>
+                  <div class="yxyy"><a href="#">5/5</a></div>
+                  <div class="yxyy hidden"><a href="#">5/150</a></div>
+                </div>
+              </li>
+              <li class="item-content  no-edit">
+                <div class="item-inner">
+                  <div class="col-4-ds"><span>广州</span></div>
+                  <div class="col-5-tym">阿莫克拉<i class="bradge">口服</i></div>
+                  <div class="col-4-scgm">13.21%</div>
+                  <div class="col-4-zdf z">+1.45%</div>
+                  <div class="yxyy"><a href="#">5/5</a></div>
+                  <div class="yxyy hidden"><a href="#">5/150</a></div>
+                </div>
+              </li>
+              <li class="item-content  no-edit">
+                <div class="item-inner">
+                  <div class="col-4-ds"><span>广州</span></div>
+                  <div class="col-5-tym">阿莫克拉<i class="bradge">口服</i></div>
+                  <div class="col-4-scgm">13.21%</div>
+                  <div class="col-4-zdf z">+1.45%</div>
+                  <div class="yxyy"><a href="#">5/5</a></div>
+                  <div class="yxyy hidden"><a href="#">5/150</a></div>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="bar bar-footer-secondary text-center">
+        <div class="text">可解锁医院5，已解锁医院0</div>
+      </div>
+      <!-- 底部工具栏 start -->
+      <nav class="bar bar-tab bar-footer">
+        <a class="tab-item active" href="#">
+          <span class="icon icon-cart"></span>
+          <span class="tab-label">自选</span>
+        </a>
+        <a class="tab-item" href="#">
+          <span class="icon icon-app"></span>
+          <span class="tab-label">产品</span>
+        </a>
+        <a class="tab-item" href="#">
+          <span class="icon icon-card"></span>
+          <span class="tab-label">医院</span>
+        </a>
+        <a class="tab-item" href="#">
+          <span class="icon icon-browser"></span>
+          <span class="tab-label">行情</span>
+        </a>
+        <a class="tab-item" href="#">
+          <span class="icon icon-friends"></span>
+          <span class="tab-label">个人中心</span>
+        </a>
+      </nav>
+    </div>
+    <!-- 底部工具栏 end -->
+    <!-- <script src="dist/js/jquery.min.js"></script> -->
+    <script src="http://cdn.bootcss.com/zepto/1.1.6/zepto.js"></script>
+    <script src="lib/light7/js/light7.js"></script>
+    <script type="text/javascript" src="lib/light7/js/light7-city-picker.min.js" charset="utf-8"></script>
+    <script src="src/js/all.js"></script>
+  </body>
+</html>

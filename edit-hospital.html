@@ -1,0 +1,126 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,minimal-ui" />
+    <meta charset="utf-8" />
+    <meta name="x5-fullscreen" content="true">
+    <meta name="full-screen" content="yes">
+    <title>广州阿莫克拉口服液</title>
+    <link href="lib/light7/css/light7.min.css" rel="stylesheet" />
+    <link href="lib/fontAw/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="dist/css/all.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div class="page">
+      <!-- 二级菜单 start -->
+      <div class="bar bar-nav select-header-secondary">
+        <div class="optional-header row no-gutter table-row-header no-edit">
+          <div class="col-2-tym">已选医院</div>
+        </div>
+      </div>
+      <!-- 二级菜单 end -->
+      <div class="content has-header" data-distance="100">
+        <div class="center">
+          <div class="list-block item-pean-horizontal">
+            <ul class="table-row">
+              <li>
+                <label class="label-checkbox item-content">
+                  <input type="checkbox" name="my-radio">
+                  <div class="item-media">
+                    <i class="icon icon-form-checkbox"></i>
+                  </div>
+                  <div class="item-inner">
+                    <div class="col-2-tym">广东省人民医院(粤省医)<i class="bradge no-bg">三甲</i></div>
+                    <div class="add" onClick="unlockAction(this)"><i class="fa fa-lock fa-lg"></i></div>
+                    <div class="add hidden"><i class="fa fa-unlock fa-lg"></i></div>
+                  </div>
+                </label>
+              </li>
+              <li>
+                <label class="label-checkbox item-content">
+                  <input type="checkbox" name="my-radio">
+                  <div class="item-media">
+                    <i class="icon icon-form-checkbox"></i>
+                    <!-- <i class="ico kf">口服</i> -->
+                  </div>
+                  <div class="item-inner">
+                    <div class="col-2-tym">广东省人民医院(粤省医)<i class="bradge no-bg">三甲</i></div>
+                    <div class="add" onClick="unlockAction(this)"><i class="fa fa-lock fa-lg"></i></div>
+                    <div class="add hidden"><i class="fa fa-unlock fa-lg"></i></div>
+                  </div>
+                </label>
+              </li>
+              <li>
+                <label class="label-checkbox item-content">
+                  <input type="checkbox" name="my-radio">
+                  <div class="item-media">
+                    <i class="icon icon-form-checkbox"></i>
+                    <!-- <i class="ico kf">口服</i> -->
+                  </div>
+                  <div class="item-inner">
+                    <div class="col-2-tym">广东省人民医院(粤省医)<i class="bradge no-bg">三甲</i></div>
+                    <div class="add" onClick="unlockAction(this)"><i class="fa fa-lock fa-lg"></i></div>
+                    <div class="add hidden"><i class="fa fa-unlock fa-lg"></i></div>
+                  </div>
+                </label>
+              </li>
+              <li>
+                <label class="label-checkbox item-content">
+                  <input type="checkbox" name="my-radio">
+                  <div class="item-media">
+                    <i class="icon icon-form-checkbox"></i>
+                    <!-- <i class="ico kf">口服</i> -->
+                  </div>
+                  <div class="item-inner">
+                    <div class="col-2-tym">广东省人民医院(粤省医)<i class="bradge no-bg">三甲</i></div>
+                    <div class="add" onClick="unlockAction(this)"><i class="fa fa-lock fa-lg"></i></div>
+                    <div class="add hidden"><i class="fa fa-unlock fa-lg"></i></div>
+                  </div>
+                </label>
+              </li>
+              <li>
+                <label class="label-checkbox item-content">
+                  <input type="checkbox" name="my-radio">
+                  <div class="item-media">
+                    <i class="icon icon-form-checkbox"></i>
+                    <!-- <i class="ico kf">口服</i> -->
+                  </div>
+                  <div class="item-inner">
+                    <div class="col-2-tym">广东省人民医院(粤省医)<i class="bradge no-bg">三甲</i></div>
+                    <div class="add" onClick="unlockAction(this)"><i class="fa fa-lock fa-lg"></i></div>
+                    <div class="add hidden"><i class="fa fa-unlock fa-lg"></i></div>
+                  </div>
+                </label>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <!-- 底部操作栏 start -->
+      <div class="bar bar-footer">
+        <button class="button button-link pull-left" onClick="selectAll()">
+          全选
+        </button>
+        <button class="button button-success active pull-right">
+          完成
+        </button>
+        <button class="button button-link pull-right">
+          删除(0)
+        </button>
+      </div>
+      <!-- 底部操作栏 end -->
+    </div>
+    <!-- <script src="dist/js/jquery.min.js"></script> -->
+    <script src="http://cdn.bootcss.com/zepto/1.1.6/zepto.js"></script>
+    <script src="lib/light7/js/light7.js"></script>
+    <script type="text/javascript" src="lib/light7/js/light7-city-picker.min.js" charset="utf-8"></script>
+    <script src="src/js/all.js"></script>
+    <script type="text/javascript">
+      function selectAll(){
+        +($('.label-checkbox').children('input:first-child')).each(function(){
+          if(!$(this).prop('checked')) $(item).prop('checked','checked');
+        });
+      }
+    </script>
+  </body>
+</html>
