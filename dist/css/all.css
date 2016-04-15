@@ -537,7 +537,7 @@ body {
 
 .unlock-button {
   text-align: center;
-  padding: 1rem 1rem 0 1rem; }
+  padding: 0 1rem 0 1rem; }
   .unlock-button .button {
     width: 100%; }
   .unlock-button .tips {
@@ -590,3 +590,10 @@ body {
 .searchbar .searchbar-cancel {
   margin-right: 0;
   opacity: 1; }
+
+.userProvide {
+  color: #a6a6a6;
+  text-align: center;
+  padding: .5rem 0;
+  line-height: 2;
+  font-size: .6rem; }

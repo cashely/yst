@@ -25,7 +25,7 @@
                     <div class="calendar-header">
                         <i class="fa fa-calendar">
                         </i>
-                        <input class="date-input" id="my-input" type="text"/>
+                        <input class="date-input" id="my-input" type="button"/>
                     </div>
                 </h1>
             </header>
@@ -68,6 +68,9 @@
                     <div class="list-block item-pean-horizontal">
                         <ul class="table-row" id="getHosProductInfo">
                         </ul>
+                        <div class="userProvide">
+                          该医院数据由 <span id="userProvideData"></span> 合作用户提供
+                        </div>
                         <div class="unlock-button">
                             <button class="button button-fill button-big" onclick="unlockSelfAction(this)">
                                 <i class="fa fa-unlock fa-fw">
@@ -112,10 +115,17 @@
         </script>
         <script type="text/javascript">
             // console.log()
-      if(url2obj(location.search).lockStatus == 'true'){
-        $('.unlock-button').remove();
-      }
+      // 判断是否需要显示解锁按钮
+      function lockStateInfo(){
+        dataApi.getLockStateInfo(function(res){
+          console.log(res);
+          if(res.count != 0){
 
+            $('.unlock-button').remove();
+          }
+        });
+      }
+      lockStateInfo();
       var loading = false;
       $.attachInfiniteScroll('.infinite-scroll');
        dataApi.getHosProductInfo(function(data,totalNum){
@@ -149,10 +159,11 @@
         var $this = $(obj);
         var num = $('#allHospital').text();
         $.confirm('您当前可解锁医院数为' + num + '个，是否解锁?', '提示', function() {
-            $.attachInfiniteScroll('.infinite-scroll');
-             dataApi.getHosProductInfo(function(data,totalNum){
+          dataApi.insertUserBreedHosLockInfo(($this.parents('li').data('id') || url2obj(location.search).id), function() {
+              $.attachInfiniteScroll('.infinite-scroll');
+              dataApi.getHosProductInfo(function(data,totalNum){
                 $('#getHosProductInfo').empty();
-                $('.unlock-button').remove();
+                lockStateInfo();
                 renderDom(data);
                 if($('#getHosProductInfo li').length >= totalNum){
                   $.detachInfiniteScroll($('.infinite-scroll'));
@@ -171,9 +182,29 @@
                   }
                 });
              });
+
+             //读取医院数量
+             dataApi.getUserLockInfo(function(d){
+              $('#allHospital').text(d.lockCount);
+              $('#readyHospital').text(d.userLockCount);
+             });
+          });
         });
     }
-       
+       // 获取合作用户数据
+      function getUserProvide(){
+        dataApi.getProductPartnerInfo(function(res){
+          console.log(res);
+          $('#userProvideData').html(res.userName);
+        });
+      }
+      getUserProvide();
+
+
+    
+
+
+
       function renderDom(data){
         var str = '';
         $.each(data, function() {

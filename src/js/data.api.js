@@ -101,7 +101,7 @@ function data() {
             }, function(res) {
                 var str = '';
                 $.each(res.businessCwm, function() {
-                    str += '<li class="col-50 item-pean"><a href="optional.html?pId=2&pName=广州市&time=2012-12" onClick="state(this)" class="item-link external">';
+                    str += '<li class="col-50 item-pean">';
                     str += '<h3>' + this.cwmName + '</h3>';
                     str += '<p>' + this.sales + '万</p>';
                     str += '<div class="item-pean-footer">';
@@ -115,7 +115,7 @@ function data() {
                     } else {
                         str += '<span class="down">' + this.change + '% </span>';
                     }
-                    str += '</div></a></li>';
+                    str += '</div></li>';
                 });
                 $('#businessCwmLink').prop('href', 'rise.html?time=' + date + '&areaId=' + id + '&pName=' + encode(privice) + '&AP=getBusinessSalesInfo&title=' + encode('分类涨幅榜'));
                 $('#businessSalesLink').prop('href', 'rise.html?time=' + date + '&areaId=' + id + '&pName=' + encode(privice) + '&AP=getBusinessConceptInfo&title=' + encode('概念涨幅榜'));
@@ -268,42 +268,8 @@ function data() {
                 pageNo: pN,
                 pageSize: pS
             }, function(res, total) {
-                var str = '',ysStr = '';
-                $.each(res, function(index) {
-                    if(index === 0){
-                      ysStr += '<li class="item-content  no-edit yl"><a class="external" href="state.html?id='+this.id+'&bId='+this.breedId+'&aId='+this.areaId+'&type=0&title='+this.areaName+' '+this.genericName+'&time='+date+'"><div class="item-inner">';
-                      ysStr += '<div class="col-4-ds"><span>' + this.areaName + '</span></div>';
-                      ysStr += '<div class="col-5-tym no-add">' + this.genericName + '<i class="bradge">' + translateIcoType(this.icoType) + '</i></div>';
-                      ysStr += '<div class="col-4-scgm">' + this.sales + '万</div>';
-                      if (this.change >= 0) {
-                          ysStr += '<div class="col-4-zdf z">' + this.change + '%</div>';
-                      } else {
-                          ysStr += '<div class="col-4-zdf d">' + this.change + '%</div>';
-                      }
-                      ysStr += '<div class="yxyy text-center">' + this.lockCount + '/' + this.hosCount + '</div>';
-                      ysStr += '<div class="yxyy hidden">' + this.userLockCount + '/' + this.hosCount + '</div>';
-                      ysStr += '</div></a></li>';
-                    }else{
-                      str += '<li class="item-content  no-edit"><a class="external" href="state.html?id='+this.id+'&bId='+this.breedId+'&aId='+this.areaId+'&type=1&title='+this.areaName+' '+this.genericName+'&time='+date+'"><div class="item-inner">';
-                      str += '<div class="col-4-ds"><span>' + this.areaName + '</span></div>';
-                      str += '<div class="col-5-tym no-add">' + this.genericName + '<i class="bradge">' + translateIcoType(this.icoType) + '</i></div>';
-                      str += '<div class="col-4-scgm">' + this.sales + '万</div>';
-                      if (this.change >= 0) {
-                          str += '<div class="col-4-zdf z">' + this.change + '%</div>';
-                      } else {
-                          str += '<div class="col-4-zdf d">' + this.change + '%</div>';
-                      }
-                      str += '<div class="yxyy">' + this.lockCount + '/' + this.hosCount + '</div>';
-                      str += '<div class="yxyy hidden">' + this.userLockCount + '/' + this.hosCount + '</div>';
-                      str += '</div></a></li>';
-                    }
-                })
-                $(str).appendTo($('#getOrderBreedInfo'));
-                $(ysStr).appendTo($('#getOrderBreedInfoYl'));
-                $('#edit').prop('href', 'edit.html?time=' + date);
-                // console.log();
                 pN++;
-                callback(total);
+                callback(res,total,date);
             })
         },
         // 删除自选产品
@@ -475,6 +441,25 @@ function data() {
                 pageSize:pS
             },function(res,total){
                 callback(res,total);
+            })
+        },
+        // 判断当前数据是否解锁
+        getLockStateInfo:function(cb){
+            var callback = cb || function(){};
+            requestData('business/getLockStateInfo',{
+                id:url2obj(location.search).id
+            },function(res){
+                callback(res);
+            })
+        },
+        //获取合作用户数据接口
+        getProductPartnerInfo:function(cb){
+            var callback = cb || function(){};
+            requestData('business/getProductPartnerInfo',{
+                breedId:url2obj(location.search).bId,
+                hospitalId:url2obj(location.search).hId
+            },function(res){
+                callback(res);
             })
         }
     }
