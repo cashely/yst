@@ -1,0 +1,113 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,minimal-ui" />
+    <meta charset="utf-8" />
+    <meta name="x5-fullscreen" content="true">
+    <meta name="full-screen" content="yes">
+    <title>添加品种</title>
+    <link href="../lib/light7/css/light7.min.css" rel="stylesheet" />
+    <link href="../lib/fontAw/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="../dist/css/all.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div class="page">
+      <!-- 头部筛选 start -->
+      <header class="bar bar-nav select-header">
+          <div class="button-link header-position">
+            <i class="fa fa-map-marker fa-lg"></i><input type="text" value="湖南省" class="readOnly-input" readonly id="globalPrivices" />
+          </div>
+          <div class="searchbar">
+            <span onclick="actionSearch()" class="searchbar-cancel">确定</span>
+            <div class="search-input">
+              <label class="icon icon-search" for="search"></label>
+              <input type="search" id='search' placeholder='请输入品种关键字...'/>
+            </div>
+          </div>
+      </header>
+      <!-- 头部筛选 end -->
+      <!-- 二级菜单 start -->
+      <div class="bar bar-header-secondary select-header-secondary">
+        <div class="optional-header row no-gutter table-row-header no-edit">
+          <div class="col-4-ds">地市</div>
+          <div class="col-3-tym">通用名</div>
+        </div>
+      </div>
+      <!-- 二级菜单 end -->
+      <div class="content infinite-scroll" data-distance="100">
+        <div class="center">
+          <div class="list-block item-pean-horizontal">
+            <ul class="table-row" id="searchOrderBreedInfo"></ul>
+          </div>
+          <!-- 下拉无限滚动 -->
+          <div class="infinite-scroll-preloader">
+              <div class="preloader"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script type="text/javascript" src="../src/js/jweixin-1.0.0.js"></script>
+    <script src="http://cdn.bootcss.com/zepto/1.1.6/zepto.js"></script>
+    <script src="../lib/light7/js/light7.js"></script>
+    <script type="text/javascript" src="../lib/light7/js/light7-city-picker.min.js" charset="utf-8"></script>
+    <script type="text/javascript" src="../src/js/data.api.js"></script>
+    <script src="../src/js/all.js"></script>
+    <script type="text/javascript">
+      (function(){
+        requestData('business/getProvinceInfo',{},function(res){
+          var str = '';
+          console.log(res);
+          $.each(res,function(){
+            str += this.areaName + ' '
+          });
+          //全国省份列表
+          $('#globalPrivices').picker({
+            toolbar: true,
+            rotateEffect: true,
+            onClose:function(p){
+              console.log(p);
+              proviceId = res[p.cols[0].activeIndex].id;
+            },
+            toolbarTemplate: '<header class="bar bar-nav">\
+                              <button class="button button-link pull-right close-picker">确定</button>\
+                              <h1 class="title">请选择省份</h1>\
+                              </header>',
+            cols: [
+                // Months
+                {
+                    values: (str.slice(0,str.length-1)).split(' ')
+                }
+            ]
+          });
+        });
+      })();
+      $('.infinite-scroll-preloader').remove();
+      function actionSearch(){
+        $('#searchOrderBreedInfo').empty();
+        var loading = false;
+          dataApi.reSet();
+         $.attachInfiniteScroll('.infinite-scroll');
+         dataApi.actionSearch(function(totalNum){
+            if($('#searchOrderBreedInfo li').length >= totalNum){
+              console.log(totalNum);
+              $.detachInfiniteScroll($('.infinite-scroll'));
+              $('.infinite-scroll-preloader').remove();
+              return;
+            }
+          });
+         $(document).on('infinite', '.infinite-scroll',function() {
+            if (loading) return;
+            loading = true;
+            dataApi.actionSearch(function(totalNum){ 
+              if($('#searchOrderBreedInfo li').length >= totalNum){
+                $.detachInfiniteScroll($('.infinite-scroll'));
+                $('.infinite-scroll-preloader').remove();
+                return;
+              }
+              loading = false;
+            });
+         });
+      }
+    </script>
+  </body>
+</html>

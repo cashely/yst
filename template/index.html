@@ -1,0 +1,103 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,minimal-ui" />
+    <meta charset="utf-8" />
+    <meta name="x5-fullscreen" content="true">
+    <meta name="full-screen" content="yes">
+    <title>市场行情</title>
+    <link href="../lib/light7/css/light7.min.css" rel="stylesheet" />
+    <link href="../lib/fontAw/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="../dist/css/all.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div class="page">
+      <!-- 头部菜单 start -->
+      <header class="bar bar-nav">
+        <div class="button button-link button-nav pull-left city-block">
+          <i class="fa fa-map-marker fa-lg"></i>
+          <input type="button" value="深圳市" class="open-panel" data-panel='#panel-left' readonly id="privice" />
+        </div>
+        <h1 class="title">
+          <div class="calendar-header">
+            <i class="fa fa-calendar"></i>
+            <input type="button" class="date-input" id="my-input"/>
+          </div>
+        </h1>
+      </header>
+      <!-- 头部菜单 end -->
+      <div class="content has-header">
+          <div class="center">
+            <div class="list-block header-list-block">
+              <ul class="row no-gutter" id="businessCwm"></ul>
+            </div>
+            <div class="content-block-title clearfix">
+              <span class="pull-left">分类涨幅榜</span><a id="businessCwmLink" href="rise.html" class="more external pull-right"><i class="fa fa-ellipsis-h"></i></a>
+            </div>
+            <div class="list-block">
+              <ul class="row no-gutter" id="businessSales"></ul>
+            </div>
+            <div class="content-block-title clearfix">
+              <span class="pull-left">概念涨幅榜</span><a id="businessSalesLink" href="rise.html" class="more external pull-right"><i class="fa fa-ellipsis-h"></i></a>
+            </div>
+            <div class="list-block">
+              <ul class="row no-gutter" id="businessConcept"></ul>
+            </div>
+            <div class="content-block-title clearfix">
+              <span class="pull-left">品种涨幅榜</span><a id="businessBreedByUpInfo" href="rise.html" class="more external pull-right"><i class="fa fa-ellipsis-h"></i></a>
+            </div>
+            <div class="list-block item-pean-horizontal">
+              <ul class="table-row" id="businessBreedUp"></ul>
+            </div>
+            <div class="content-block-title clearfix">
+              <span class="pull-left">品种跌幅榜</span><a id="businessBreedByDownInfo" href="rise.html" class="more external pull-right"><i class="fa fa-ellipsis-h"></i></a>
+            </div>
+            <div class="list-block item-pean-horizontal">
+              <ul class="table-row" id="businessBreedDown"></ul>
+            </div>
+          </div>
+
+      </div>
+      <!-- 底部工具栏 start -->
+      <nav class="bar bar-tab">
+        <a class="tab-item external" href="select.html">
+          <span class="icon icon-cart"></span>
+          <span class="tab-label">自选</span>
+        </a>
+        <a class="tab-item external" href="#">
+          <span class="icon icon-app"></span>
+          <span class="tab-label">产品</span>
+        </a>
+        <a class="tab-item external" href="#">
+          <span class="icon icon-card"></span>
+          <span class="tab-label">医院</span>
+        </a>
+        <a class="tab-item active external" href="javascript:void(0)">
+          <span class="icon icon-browser"></span>
+          <span class="tab-label">行情</span>
+        </a>
+        <a class="tab-item external" href="#">
+          <span class="icon icon-friends"></span>
+          <span class="tab-label">个人中心</span>
+        </a>
+      </nav>
+    </div>
+    <!-- 底部工具栏 end -->
+    <!-- 省份列表 -->
+    <div class="panel-overlay"></div>
+    <!-- Left Panel with Reveal effect -->
+    <div class="panel panel-left panel-reveal theme-dark" id='panel-left'></div>
+    <!-- <script src="dist/js/jquery.min.js"></script> -->
+    <script type="text/javascript" src="../src/js/jweixin-1.0.0.js"></script>
+    <script src="http://cdn.bootcss.com/zepto/1.0rc1/zepto.min.js"></script>
+    <script src="../lib/light7/js/light7.js"></script>
+    <script type="text/javascript" src="../lib/light7/js/light7-city-picker.min.js" charset="utf-8"></script>
+    <script type="text/javascript" src="../src/js/data.api.js"></script>
+    <script src="../src/js/all.js"></script>
+    <script type="text/javascript">
+      dataApi.getIndexData();
+    </script>
+                    
+              
+  </body>
+</html>

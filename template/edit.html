@@ -1,0 +1,140 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <meta content="width=device-width,initial-scale=1,user-scalable=no,minimal-ui" name="viewport"/>
+        <meta charset="utf-8"/>
+        <meta content="true" name="x5-fullscreen">
+            <meta content="yes" name="full-screen">
+                <title>
+                    自选
+                </title>
+                <link href="../lib/light7/css/light7.min.css" rel="stylesheet"/>
+                <link href="../lib/fontAw/css/font-awesome.min.css" rel="stylesheet"/>
+                <link href="../dist/css/all.css" rel="stylesheet"/>
+            </meta>
+        </meta>
+    </head>
+    <body>
+        <div class="page">
+            <!-- 二级菜单 start -->
+            <div class="bar bar-nav select-header-secondary">
+                <div class="row no-gutter table-row-header select-header no-edit">
+                    <div class="col-4-ds">
+                        地市
+                    </div>
+                    <div class="col-4-tym">
+                        通用名
+                    </div>
+                    <div class="yxyy">
+                        已选医院
+                    </div>
+                    <div class="yxyy">
+                        解锁医院
+                    </div>
+                </div>
+            </div>
+            <!-- 二级菜单 end -->
+            <div class="content has-header infinite-scroll" data-distance="100">
+                <div class="center">
+                    <div class="list-block item-pean-horizontal">
+                        <ul class="table-row" id="deleteUserBreedInfo">
+                        </ul>
+                    </div>
+                    <!-- 下拉无限滚动 -->
+                    <div class="infinite-scroll-preloader">
+                        <div class="preloader"></div>
+                    </div>
+                </div>
+            </div>
+            <!-- 底部操作栏 start -->
+            <div class="bar bar-footer">
+                <button class="button button-link pull-left" onclick="selectAll()">
+                    全选
+                </button>
+                <a class="button button-success active pull-right external" href="select.html" id="closeEdit">
+                    完成
+                </a>
+                <button class="button button-link pull-right" onclick="actionDelete()">
+                    删除(
+                    <span id="totalSelect">
+                        0
+                    </span>
+                    )
+                </button>
+            </div>
+            <!-- 底部操作栏 end -->
+        </div>
+        <!-- <script src="dist/js/jquery.min.js"></script> -->
+        <script src="../src/js/jweixin-1.0.0.js" type="text/javascript">
+        </script>
+        <script src="http://cdn.bootcss.com/zepto/1.1.6/zepto.js">
+        </script>
+        <script src="../lib/light7/js/light7.js">
+        </script>
+        <script charset="utf-8" src="../lib/light7/js/light7-city-picker.min.js" type="text/javascript">
+        </script>
+        <script src="../src/js/data.api.js" type="text/javascript">
+        </script>
+        <script src="../src/js/all.js">
+        </script>
+        <script type="text/javascript">
+            var loading = false;
+    $.attachInfiniteScroll('.infinite-scroll');
+     dataApi.editUserBreedInfo(function(totalNum){
+        if($('#deleteUserBreedInfo li').length >= totalNum){
+          $.detachInfiniteScroll($('.infinite-scroll'));
+          $('.infinite-scroll-preloader').remove();
+        }
+      });
+     $(document).on('infinite', '.infinite-scroll',function() {
+        if (loading) return;
+        loading = true;
+        dataApi.editUserBreedInfo(function(totalNum,pn){
+          loading = false;
+          if($('#deleteUserBreedInfo li').length >= totalNum){
+            console.log('auto');
+            $.detachInfiniteScroll($('.infinite-scroll'));
+            $('.infinite-scroll-preloader').remove();
+          }else{
+            pn ++;
+          }
+        });
+     });
+     function actionDelete(){
+      var arr = [];
+      $.each($('#deleteUserBreedInfo input:checked'),function(){
+        arr.push(this.value);
+      });
+      dataApi.deleteUserBreedInfo(arr,function(){
+          $.toast("删除地区品种信息成功!");
+          $('#deleteUserBreedInfo li').remove();
+          totalSelect(0);
+          setTimeout(function(){
+            dataApi.reSet();
+            $.attachInfiniteScroll('.infinite-scroll');
+             dataApi.editUserBreedInfo(function(totalNum){
+                if($('#deleteUserBreedInfo li').length >= totalNum){
+                  $.detachInfiniteScroll($('.infinite-scroll'));
+                  $('.infinite-scroll-preloader').remove();
+                }
+              });
+             $(document).on('infinite', '.infinite-scroll',function() {
+                if (loading) return;
+                loading = true;
+                dataApi.editUserBreedInfo(function(totalNum,pn){
+                  loading = false;
+                  if($('#deleteUserBreedInfo li').length >= totalNum){
+                    console.log('auto');
+                    $.detachInfiniteScroll($('.infinite-scroll'));
+                    $('.infinite-scroll-preloader').remove();
+                  }else{
+                    pn ++;
+                  }
+                });
+             });
+          },2000)
+      })
+     }
+        </script>
+    </body>
+</html>

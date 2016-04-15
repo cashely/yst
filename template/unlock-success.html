@@ -1,0 +1,206 @@
+<!DOCTYPE HTML>
+<html lang="zh_cn">
+    <head>
+        <meta content="width=device-width,initial-scale=1,user-scalable=no,minimal-ui" name="viewport"/>
+        <meta charset="utf-8"/>
+        <meta content="true" name="x5-fullscreen">
+            <meta content="yes" name="full-screen">
+                <title>
+                    00000041
+                </title>
+                <link href="../lib/light7/css/light7.min.css" rel="stylesheet"/>
+                <link href="../lib/fontAw/css/font-awesome.min.css" rel="stylesheet"/>
+                <link href="../dist/css/all.css" rel="stylesheet"/>
+            </meta>
+        </meta>
+    </head>
+    <body>
+        <div class="page">
+            <!-- 头部菜单 start -->
+            <header class="bar bar-nav">
+                <div class="button button-link button-nav pull-left">
+                    <!-- <span class="tips-arrow">MAT</span> -->
+                </div>
+                <h1 class="title">
+                    <div class="calendar-header">
+                        <i class="fa fa-calendar">
+                        </i>
+                        <input class="date-input" id="my-input" type="text"/>
+                    </div>
+                </h1>
+            </header>
+            <!-- 头部菜单 end -->
+            <!-- 二级菜单 start -->
+            <div class="bar bar-header-secondary">
+                <div class="optional-header row no-gutter table-row-header no-edit">
+                    <div class="col-4-tym">
+                        产品
+                    </div>
+                    <div class="col-4-scfe">
+                        <div class="col-child-2" onclick="scfeAction(this)">
+                            <span class="break">
+                                市场份额
+                            </span>
+                            <span class="tips-arrow">
+                                MTH
+                            </span>
+                            <span class="tips-arrow hidden">
+                                YTD
+                            </span>
+                            <span class="tips-arrow hidden">
+                                MAT
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-4-zdf">
+                        涨跌幅
+                        <i class="fa fa-caret-down ">
+                        </i>
+                    </div>
+                    <div class="col-4-ev">
+                        EV
+                    </div>
+                </div>
+            </div>
+            <!-- 二级菜单 end -->
+            <div class="content has-secondary-bar has-footer-secondary no-footer infinite-scroll" data-distance="100">
+                <div class="center">
+                    <div class="list-block item-pean-horizontal">
+                        <ul class="table-row" id="getHosProductInfo">
+                        </ul>
+                        <div class="unlock-button">
+                            <button class="button button-fill button-big" onclick="unlockSelfAction(this)">
+                                <i class="fa fa-unlock fa-fw">
+                                </i>
+                                解锁
+                            </button>
+                            <p class="tips">
+                                小提示:「解锁」后可查看全部数据
+                            </p>
+                        </div>
+                    </div>
+                    <!-- 下拉无限滚动 -->
+                    <div class="infinite-scroll-preloader">
+                        <div class="preloader">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="bar bar-footer-secondary bar-footer-secondary-nofooter text-center">
+                <div class="text">
+                    可解锁医院
+                    <span id="allHospital">
+                    </span>
+                    ，已解锁医院
+                    <span id="readyHospital">
+                    </span>
+                </div>
+            </div>
+        </div>
+        <!-- <script src="dist/js/jquery.min.js"></script> -->
+        <script src="../src/js/jweixin-1.0.0.js" type="text/javascript">
+        </script>
+        <script src="http://cdn.bootcss.com/zepto/1.1.6/zepto.js">
+        </script>
+        <script src="../lib/light7/js/light7.js">
+        </script>
+        <script charset="utf-8" src="../lib/light7/js/light7-city-picker.min.js" type="text/javascript">
+        </script>
+        <script src="../src/js/data.api.js" type="text/javascript">
+        </script>
+        <script src="../src/js/all.js">
+        </script>
+        <script type="text/javascript">
+            // console.log()
+      if(url2obj(location.search).lockStatus == 'true'){
+        $('.unlock-button').remove();
+      }
+
+      var loading = false;
+      $.attachInfiniteScroll('.infinite-scroll');
+       dataApi.getHosProductInfo(function(data,totalNum){
+          renderDom(data);
+          if($('#getHosProductInfo li').length >= totalNum){
+            $.detachInfiniteScroll($('.infinite-scroll'));
+            $('.infinite-scroll-preloader').remove();
+          }
+        });
+       $(document).on('infinite', '.infinite-scroll',function() {
+          if (loading) return;
+          loading = true;
+          dataApi.getHosProductInfo(function(data,totalNum){
+            loading = false;
+            renderDom(data);
+            if($('#getHosProductInfo li').length >= totalNum){
+              $.detachInfiniteScroll($('.infinite-scroll'));
+              $('.infinite-scroll-preloader').remove();
+            }
+          });
+       });
+
+       //读取医院数量
+       dataApi.getUserLockInfo(function(d){
+        $('#allHospital').text(d.lockCount);
+        $('#readyHospital').text(d.userLockCount);
+       });
+
+
+       function unlockSelfAction(obj) {
+        var $this = $(obj);
+        var num = $('#allHospital').text();
+        $.confirm('您当前可解锁医院数为' + num + '个，是否解锁?', '提示', function() {
+            $.attachInfiniteScroll('.infinite-scroll');
+             dataApi.getHosProductInfo(function(data,totalNum){
+                $('#getHosProductInfo').empty();
+                $('.unlock-button').remove();
+                renderDom(data);
+                if($('#getHosProductInfo li').length >= totalNum){
+                  $.detachInfiniteScroll($('.infinite-scroll'));
+                  $('.infinite-scroll-preloader').remove();
+                }
+              });
+             $(document).on('infinite', '.infinite-scroll',function() {
+                if (loading) return;
+                loading = true;
+                dataApi.getHosProductInfo(function(data,totalNum){
+                  loading = false;
+                  renderDom(data);
+                  if($('#getHosProductInfo li').length >= totalNum){
+                    $.detachInfiniteScroll($('.infinite-scroll'));
+                    $('.infinite-scroll-preloader').remove();
+                  }
+                });
+             });
+        });
+    }
+       
+      function renderDom(data){
+        var str = '';
+        $.each(data, function() {
+            str += '<li class="item-content no-edit"><div class="item-inner">';
+            str += '<div class="col-4-tym"><span class="break">'+this.drugName+' '+this.spec+'*'+this.pack+'</span><span class="jc">'+this.manufactorShort+'</span>'
+            if(this.singleBase){
+              str += '<i class="bradge">基</i>';
+            }
+            if(this.healthcare){
+              str += '<i class="bradge">保</i>'
+            }
+            str += '</div>';
+            str += '<div class="col-4-scfe">';
+            str += '<span>'+this.marketMth+'</span>';
+            str += '<span class="hidden">'+this.marketYtd+'</span>';
+            str += '<span class="hidden">'+this.marketMat+'</span>';
+            str += '</div>';
+            if(this.change >= 0){
+              str += '<div class="col-4-zdf z">'+this.change+'%</div>';
+            }else{
+              str += '<div class="col-4-zdf d">'+this.change+'%</div>';
+            }
+            str += '<div class="col-4-ev">'+this.ev+'</div>';
+            str += '</div></li>';
+        });
+        $(str).appendTo($('#getHosProductInfo'));
+      }
+        </script>
+    </body>
+</html>
