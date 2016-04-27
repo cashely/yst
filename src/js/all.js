@@ -3,6 +3,7 @@ time  -- 时间
 pName  -- 地市
 areaId  -- 地市id
 */
+var httpAddress = 'http://yst.immortalshealth.com/modm/';
 var encode = function(str) {
     return encodeURI(encodeURI(str));
 }
@@ -15,7 +16,7 @@ $(function() {
         toolbarTemplate: '<header class="bar bar-nav">\
     <button class="button button-link pull-right close-picker">确定</button>\
     <h1 class="title">请选择地区</h1>\
-    </header>',
+</header>',
         inputReadOnly: true
     });
     $('h3.item-title').overFlowText();
@@ -32,12 +33,13 @@ $(function() {
         // updateValuesOnMomentum:false,
         // updateValuesOnTouchmove:false,
         onClose: function(p) {
-            tabTime2(p.value[1].replace('年', '') + '-' + p.value[0].replace('月', ''));
+            var month = p.value[0].replace('月', '');
+            tabTime2(p.value[1].replace('年', '') + '-' + ((month.length < 2) ? ('0' + month) : month));
         },
         toolbarTemplate: '<header class="bar bar-nav">\
-                      <button class="button button-link pull-right close-picker">确定</button>\
-                      <h1 class="title">选择日期和时间</h1>\
-                      </header>',
+    <button class="button button-link pull-right close-picker">确定</button>\
+    <h1 class="title">选择日期和时间</h1>\
+</header>',
         cols: [
             // Months
             {
@@ -57,19 +59,12 @@ $(function() {
             }
         ]
     });
-    // 省份选择
-    $('#panel-left .item-title').on('click', function() {
-        var $this = $(this);
-        var privice = $this.text();
-        document.getElementById('privice').value = privice;
-        $.closePanel('#panel-left');
-    });
 });
 $.fn.overFlowText = function() {
     "use strict";
     return this.each(function() {
-        var that = $(this),
-            cNode = that.children('*:first-child');
+        var that = $(this);
+        var cNode = that.children('*:first-child');
         var scrollText = function(len, lenH) {
             var t = 1;
             setInterval(function() {
@@ -132,17 +127,17 @@ function unlockAction(obj) {
     var num = $('#allHospital').text();
     $.confirm('您当前可解锁医院数为' + num + '个，是否解锁?', '提示', function() {
         dataApi.insertUserBreedHosLockInfo(($this.parents('li').data('id') || url2obj(location.search).id), function() {
-            var url = 'unlock-success.html?hId=' + ($this.parents('li').data('hId') || url2obj(location.search).hId) + '&bId=' + url2obj(location.search).bId + '&aId=' + url2obj(location.search).aId + '&time=' + url2obj(location.search).time + '&hosCode='+ (url2obj(location.search).hosCode || $this.parents('li').data('hosCode')) + '&id=' + ($this.parents('li').data('id') || url2obj(location.search).id);
+            var url = 'unlock-success.html?title='+ (url2obj(location.search).hosCode || $this.parents('li').data('hosCode')) +'&hId=' + ($this.parents('li').data('hId') || url2obj(location.search).hId) + '&bId=' + url2obj(location.search).bId + '&aId=' + url2obj(location.search).aId + '&time=' + url2obj(location.search).time + '&hosCode=' + (url2obj(location.search).hosCode || $this.parents('li').data('hosCode')) + '&id=' + ($this.parents('li').data('id') || url2obj(location.search).id);
             location.href = url;
         });
     });
 }
 // 解锁
 function getHosInfo(obj) {
-    var $this = $(obj)
+    var $this = $(obj);
     var isLock = ($this.parents('li').data('lockStatus') == '1' ? true : false);
     console.log($this.parents('li').data('lockStatus'));
-    var url = 'unlock-success.html?hId=' + ($this.parents('li').data('hId') || url2obj(location.search).hId) + '&bId=' + url2obj(location.search).bId + '&aId=' + url2obj(location.search).aId + '&time=' + url2obj(location.search).time + '&hosCode='+ (url2obj(location.search).hosCode || $this.parents('li').data('hosCode')) + '&id=' + ($this.parents('li').data('id') || url2obj(location.search).id);
+    var url = 'unlock-success.html?title='+ (url2obj(location.search).hosCode || $this.parents('li').data('hosCode')) +'&hId=' + ($this.parents('li').data('hId') || url2obj(location.search).hId) + '&bId=' + url2obj(location.search).bId + '&aId=' + url2obj(location.search).aId + '&time=' + url2obj(location.search).time + '&hosCode=' + (url2obj(location.search).hosCode || $this.parents('li').data('hosCode')) + '&id=' + ($this.parents('li').data('id') || url2obj(location.search).id);
     location.href = url;
 }
 //切换市场规模指标
@@ -153,59 +148,73 @@ function scfeAction(obj) {
     $('#getHosProductInfo li .col-4-scfe').children('span').addClass('hidden');
     key >= ($this.children('.tips-arrow').length - 1) ? key = 0 : key++;
     $this.children('.tips-arrow').eq(key).removeClass('hidden');
-    $('#getHosProductInfo li').each(function(){
+    $('#getHosProductInfo li').each(function() {
         $(this).find('.col-4-scfe').children('span').eq(key).removeClass('hidden')
     });
     $this.data('key', key);
 }
 // 阻止页面拉出浏览器外面
-(function(obj) {
-    obj.addEventListener('touchstart', function(e) {
-        var re = obj.querySelectorAll('.content')[0];
-        var headerH = obj.querySelectorAll('header.bar-nav')[0].offsetHeight;
-        var footerH = re.offsetHeight;
-        if (e.touches[0].clientY > footerH || e.touches[0].clientY < headerH) {
-            e.preventDefault();
-        }
-    });
-})(document);
+// (function(obj) {
+//     obj.addEventListener('touchstart', function(e) {
+//         var re = obj.querySelectorAll('.content')[0];
+//         var headerH = obj.querySelectorAll('header.bar-nav')[0].offsetHeight;
+//         var footerH = re.offsetHeight;
+//         if (e.touches[0].clientY > footerH || e.touches[0].clientY < headerH) {
+//             e.preventDefault();
+//         }
+//     });
+// })(document);
 // 获取服务器配置微信信息
 requestData('business/getJsSdkInfo', {
     strBackUrl: encode(location.href)
 }, function(res) {
-    var ts = [];
-    $.each(res, function(k, v) {
-        ts.push(k + '=>' + v);
-    });
     wx.config({
         debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
         appId: 'wx06af7b346a9e1f77', // 必填，公众号的唯一标识
         timestamp: res.timestamp, // 必填，生成签名的时间戳
         nonceStr: res.nonceStr, // 必填，生成签名的随机串
         signature: res.signature, // 必填，签名，见附录1
-        jsApiList: ['getLocation', 'onMenuShareTimeline'] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
+        jsApiList: ['getLocation', 'onMenuShareTimeline', 'onMenuShareAppMessage'] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
     });
 })
 // 微信验证完成阶段
 wx.ready(function() {
-    // alert(1);
-    wx.getLocation({
-        type: 'wgs84', // 默认为wgs84的gps坐标，如果要返回直接给openLocation用的火星坐标，可传入'gcj02'
-        success: function(res) {
-            var latitude = res.latitude; // 纬度，浮点数，范围为90 ~ -90
-            var longitude = res.longitude; // 经度，浮点数，范围为180 ~ -180。
-            var speed = res.speed; // 速度，以米/每秒计
-            var accuracy = res.accuracy; // 位置精度
+    // 分享
+    var info = {
+        title: '药市通-医药行业的「股市」利器',
+        link: 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx06af7b346a9e1f77&redirect_uri=http://yst.immortalshealth.com/yst/template/index.html&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect',
+        imgUrl: 'http://yst.immortalshealth.com/test/src/images/logo.jpg',
+        desc: '通过市场行情引导，进行产品自选和医院绑定，辅助销售人员管理自己的重点客户和重要信息，以达成销售目标'
+    };
+    wx.onMenuShareTimeline({
+        title: info.title, // 分享标题
+        link: info.link, // 分享链接
+        imgUrl: info.imgUrl, // 分享图标
+        success: function() {
+            $.toast('分享成功！');
+        }
+    });
+    wx.onMenuShareAppMessage({
+        title: info.title,
+        desc: info.desc, // 分享描述
+        link: info.link, // 分享链接
+        imgUrl: info.imgUrl, // 分享图标
+        type: '', // 分享类型,music、video或link，不填默认为link
+        dataUrl: '', // 如果type是music或video，则要提供数据链接，默认为空
+        success: function() {
+            // 用户确认分享后执行的回调函数
+            $.toast('分享成功！');
         }
     });
 })
 //ajax modal
-function requestData(url, parmars, callback) {
+function requestData(url, parmars, cb) {
+    $.showPreloader();
     // var httpAddress = 'http://192.168.1.233:8021/modm/';
-    var httpAddress = 'http://yst.immortalshealth.com/modm/';
-    var callback = callback || function() {};
+
+    var callback = cb || function() {};
     $.ajax({
-        url: httpAddress + url,
+        url: httpAddress + url + '?' + +new Date(),
         data: parmars,
         dataType: 'JSON',
         type: 'POST',
@@ -216,13 +225,20 @@ function requestData(url, parmars, callback) {
                 if (res.datas) {
                     callback(res.datas, res.totalSize);
                 } else {
-                    callback();
+                    try {
+                        callback();
+                    } catch (e) {}
                 }
+                setTimeout(function() {
+                    $.hidePreloader();
+                }, 300);
             } else {
+                $.hidePreloader();
                 $.alert(res.message);
             }
         },
         error: function(xhr) {
+            $.hidePreloader();
             $.alert('网络故障!' + xhr);
         }
     });
@@ -248,12 +264,15 @@ function url2obj(s) {
 //2012-12 => 2012年12月
 function time2date(t) {
     var str = t.split('-');
+    var month = str[1];
+    str[1] = (str[1].indexOf('0') === 0) ? str[1].slice(1) : str[1];
     return str[1] + '月 ' + str[0] + '年';
 }
 //12月 2012年 => 2012-12
 function date2time(d) {
     var str = d.split(' ');
-    return str[1].replace('年') + '-' + str[0].replace('月');
+    var month = str[0].replace('月');
+    return str[1].replace('年') + '-' + ((month.length < 2) ? ('0' + month) : month);
 }
 
 function getPriviceList() {
@@ -262,13 +281,12 @@ function getPriviceList() {
         var str = '';
         $.each(res, function() {
             if (this.areaStatus) {
-                str += '<div class="content-block-title" data-id="' + this.id + '" onclick="showChildProvices(this)">' + this.areaName + this.areaStatus + '</div>';
+                str += '<div class="content-block-title" data-id="' + this.id + '" onclick="showChildProvices(this)">' + this.areaName + '</div>';
             } else {
                 str += '<div class="content-block-title" data-id="' + this.id + '">' + this.areaName + '(暂未开放)</div>';
             }
         });
         $(str).appendTo($('#panel-left'));
-        console.log(str);
     });
 };
 // 获取省份下面的地市信息
@@ -312,6 +330,8 @@ function tabProvices2(obj) {
     console.log(openUrl);
     url.pName = $this.text();
     url.areaId = $this.data('id');
+    sessionStorage.setItem('areaName', url.pName);
+    sessionStorage.setItem('areaId', url.areaId);
     var n = [];
     $.each(url, function(k, v) {
         n.push(k + '=' + v);
@@ -333,6 +353,7 @@ function tabTime2(time) {
         url = url2obj(location.search);
     }
     url.time = time;
+    sessionStorage.setItem('time', url.time);
     var n = [];
     $.each(url, function(k, v) {
         n.push(k + '=' + v);
@@ -346,7 +367,7 @@ function selectAll() {
     +($('.label-checkbox').children('input:first-child')).each(function() {
         if (!$(this).prop('checked')) $(this).prop('checked', 'checked');
     });
-    totalSelect()
+    totalSelect($('.label-checkbox').children('input:first-child').length)
 }
 $(document).on('change', '#deleteUserBreedInfo input,#getUserBreedHospitalInfo input', function() {
     totalSelect($(this).parents('ul').find('input:checked').length);
@@ -356,5 +377,40 @@ function totalSelect(num) {
     $('#totalSelect').text(num);
     console.log($('#deleteUserBreedInfo input:checked').length, '选择的个数');
 }
+// 排序变换元素展现功能
+function sortFn(element) {
+    
+    var $this = $(element);
+    $this.parent().find('.fa').remove();
+    $this.siblings('.sort').data('sortType', 'asc');
+    if ($this.data('sortType') == 'asc' || $this.data('sortType') == undefined || $this.data('sortType') == '') {
+        $this.data('sortType', 'desc');
+        $('<i class="fa fa-sort-down"></i>').appendTo($this);
+    } else {
+        $this.data('sortType', 'asc');
+        $('<i class="fa fa-sort-up"></i>').appendTo($this);
+    }
+
+    $this.parent().data('sidx', $this.data('sortName'));
+    $this.parent().data('sord', $this.data('sortType'));
+    dataApi.reSet();
+}
+
+// 没有数据的处理方法
+function noDataFn(ele){
+    var element = ele || $('.content');
+    
+    if(element.children('.noDataTip').length > 0) return;
+    $('<div class="noDataTip">:( 没有数据 ~ ~</div>').appendTo(element);
+    element.addClass('noData');
+    return;
+}
+function hasDataFn(ele){
+    var element = ele || $('.content');
+    element.removeClass('noData').children('.noDataTip').remove();
+}
 //初始化所有接口事件
 var dataApi = data();
+setInterval(function(){
+    dataApi.getInitWxUser();
+},15*60*1000)

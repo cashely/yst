@@ -5,6 +5,7 @@
     <meta charset="utf-8" />
     <meta name="x5-fullscreen" content="true">
     <meta name="full-screen" content="yes">
+    <meta http-equiv="pragma" content="no-cache">
     <title>市场行情</title>
     <link href="../lib/light7/css/light7.min.css" rel="stylesheet" />
     <link href="../lib/fontAw/css/font-awesome.min.css" rel="stylesheet" />
@@ -16,7 +17,7 @@
       <header class="bar bar-nav">
         <div class="button button-link button-nav pull-left city-block">
           <i class="fa fa-map-marker fa-lg"></i>
-          <input type="button" value="深圳市" class="open-panel" data-panel='#panel-left' readonly id="privice" />
+          <input type="button" value="加载中" class="open-panel" data-panel='#panel-left' readonly id="privice" />
         </div>
         <h1 class="title">
           <div class="calendar-header">
@@ -68,15 +69,17 @@
           <span class="icon icon-app"></span>
           <span class="tab-label">产品</span>
         </a>
+        <a class="tab-item active external" href="javascript:void(0)">
+          <div class="index-obj">
+            <span class="icon icon-browser"></span>
+            <span class="tab-label">行情</span>
+          </div>
+        </a>
         <a class="tab-item external" href="#">
           <span class="icon icon-card"></span>
           <span class="tab-label">医院</span>
         </a>
-        <a class="tab-item active external" href="javascript:void(0)">
-          <span class="icon icon-browser"></span>
-          <span class="tab-label">行情</span>
-        </a>
-        <a class="tab-item external" href="#">
+        <a class="tab-item external" href="user.html">
           <span class="icon icon-friends"></span>
           <span class="tab-label">个人中心</span>
         </a>
@@ -95,7 +98,48 @@
     <script type="text/javascript" src="../src/js/data.api.js"></script>
     <script src="../src/js/all.js"></script>
     <script type="text/javascript">
-      dataApi.getIndexData();
+    console.log(sessionStorage.getItem('areaName'));
+      if(!sessionStorage.getItem('areaName')){
+        $.showPreloader('正在获取地理位置...');
+        wx.ready(function(){
+        wx.getLocation({
+          type: 'wgs84', // 默认为wgs84的gps坐标，如果要返回直接给openLocation用的火星坐标，可传入'gcj02'
+          success: function (res) {
+              //获取地理位置信息接口
+              $.ajax({
+                  url: httpAddress +'business/getUserAreaInfo?'+ +new Date(),
+                  data: {
+                      latitude:res.latitude,
+                      longitude:res.longitude
+                  },
+                  dataType: 'JSON',
+                  type: 'POST',
+                  async: false,
+                  timeout: 40 * 1000,
+                  success: function(res) {
+                      var res = JSON.parse(res);
+                      sessionStorage.setItem('areaName',res.datas.areaName);
+                      sessionStorage.setItem('areaId',res.datas.areaId);
+                      sessionStorage.setItem('time',res.datas.yearMonth);
+                      dataApi.changePrivice(res.datas.areaId,res.datas.areaName);
+                      dataApi.changeDate(res.datas.yearMonth);
+                      dataApi.getInitWxUser();
+                      dataApi.getIndexData();     
+                  },
+                  error: function(xhr) {
+                      $.hidePreloader();
+                      $.alert('网络故障!' + xhr);
+                  }
+              });
+          }
+          });
+      })
+      }else{
+        dataApi.changePrivice(sessionStorage.getItem('areaId'),sessionStorage.getItem('areaName'));
+        dataApi.changeDate(sessionStorage.getItem('time'));
+        dataApi.getInitWxUser();
+        dataApi.getIndexData();   
+}
     </script>
                     
               

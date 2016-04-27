@@ -1,14 +1,14 @@
 // 首页整体数据
 function data() {
-    // 行情首页数据接口
-    var id = url2obj(location.search).pId || 2; //城市id
-    var date = url2obj(location.search).time || '2015-11'; //时间
-    var privice = url2obj(location.search).pName || '广州市'; //城市
+    var id = url2obj(location.search).areaId || 2; //城市id
+    var date = url2obj(location.search).time || '2015-10'; //时间
+    var privice = url2obj(location.search).pName || '加载中'; //城市
     var pN = 1;
-    var pS = 10;
+    var pS = 15;
     var actionApi = url2obj(location.search).AP || '';
+    var wechatCode = url2obj(location.search).code;
 
-    function init() {
+    var init = function() {
         if (document.getElementById('privice')) document.getElementById('privice').value = privice;
         // document.getElementsByTagName('title')[0].innerText = url2obj(location.search).name;
         if (url2obj(location.search).title) {
@@ -64,43 +64,111 @@ function data() {
                 icoType = '口腔';
                 break;
             case 201:
-                icoType = '中药';
+                icoType = '中';
                 break;
             case 202:
-                icoType = '西药';
+                icoType = '西';
                 break;
             case 301:
-                icoType = '一甲';
+                icoType = '三甲';
                 break;
             case 302:
+                icoType = '三乙';
+                break;
+            case 303:
+                icoType = '三丙';
+                break;
+            case 304:
+                icoType = '三级';
+                break;
+            case 305:
                 icoType = '二甲';
+                break;
+            case 306:
+                icoType = '二乙';
+                break;
+            case 307:
+                icoType = '二丙';
+                break;
+            case 308:
+                icoType = '二级';
+                break;
+            case 309:
+                icoType = '一甲';
+                break;
+            case 310:
+                icoType = '一乙';
+                break;
+            case 311:
+                icoType = '一丙';
+                break;
+            case 312:
+                icoType = '一级';
+                break;
+            case 313:
+                icoType = '未评';
+                break;
+            case 314:
+                icoType = '不详';
                 break;
         }
         return icoType;
     }
     return {
+        getInitWxUser: function() {
+            requestData('business/getInitWxUser', {
+                code: wechatCode
+            });
+        },
         changeDate: function(d) {
-            date = d;
+            date = url2obj(location.search).time || d;
         },
         // 重置页面数据
         reSet: function() {
             pN = 1;
         },
         changePrivice: function(n, pn) {
-            id = n;
-            privice = pn;
-            console.log(pn);
+            id = url2obj(location.search).areaId || n;
+            privice = url2obj(location.search).pName || pn;
         },
         goState: function() {},
         getIndexData: function() {
-            // console.log(id,'当前id');
-            $.showPreloader();
+
+            init();
             requestData('business/getMarketInfo', {
                 yearMonth: date,
                 areaId: id
             }, function(res) {
+                // 异步传递code
+                if(res.businessCwm.length == 0){
+                  noDataFn($('#businessCwm'));
+                }else{
+                  hasDataFn($('#businessCwm'));
+                }
+                if(res.businessSales.length == 0){
+                  noDataFn($('#businessSales'));
+                }else{
+                  hasDataFn($('#businessSales'));
+                }
+                if(res.businessConcept.length == 0){
+                  noDataFn($('#businessConcept'));
+                }else{
+                  hasDataFn($('#businessConcept'));
+                }
+                if(res.businessBreedUp.length == 0){
+                  noDataFn($('#businessBreedUp'));
+                }else{
+                  hasDataFn($('#businessBreedUp'));
+                }
+                if(res.businessBreedDown.length == 0){
+                  noDataFn($('#businessBreedDown'));
+                }else{
+                  hasDataFn($('#businessBreedDown'));
+                }
                 var str = '';
+
                 $.each(res.businessCwm, function() {
+
                     str += '<li class="col-50 item-pean">';
                     str += '<h3>' + this.cwmName + '</h3>';
                     str += '<p>' + this.sales + '万</p>';
@@ -121,15 +189,15 @@ function data() {
                 $('#businessSalesLink').prop('href', 'rise.html?time=' + date + '&areaId=' + id + '&pName=' + encode(privice) + '&AP=getBusinessConceptInfo&title=' + encode('概念涨幅榜'));
                 $('#businessBreedByUpInfo').prop('href', 'optional.html?time=' + date + '&areaId=' + id + '&pName=' + encode(privice) + '&AP=getBusinessBreedByUpInfo&title=' + encode('品种涨幅榜'));
                 $('#businessBreedByDownInfo').prop('href', 'optional.html?time=' + date + '&areaId=' + id + '&pName=' + encode(privice) + '&AP=getBusinessBreedByDownInfo&title=' + encode('品种跌幅榜'));
-                $('#businessCwm').html(str);
+                $('#businessCwm').append(str);
                 str = '';
                 $.each(res.businessSales, function(index) {
                     // console.log(this,index);
-                    str += '<li class="col-33 item-pean"><a href="optional.html?id=' + this.id + '&pid=' + this.areaId + '&pName=' + privice + '&sId=' + this.salesId + '&time=' + date + '&AP=getSalesBreedInfo&title=' + this.salesName + '" class="item-link external">';
+                    str += '<li class="col-33 item-pean"><a href="optional.html?id=' + this.id + '&areaId=' + this.areaId + '&pName=' + privice + '&sId=' + this.salesId + '&time=' + date + '&AP=getSalesBreedInfo&title=' + this.salesName + '" class="item-link external">';
                     if (index === 0) {
                         str += '<span class="top"><i class="fa fa-trophy"></i></span>';
                     }
-                    str += '<h3>' + this.salesName + '</h3>';
+                    str += '<h3 class="scroll-title"><span><i class="bradge inline">' + translateIcoType(this.icoType) + '</i>' + this.salesName + '</span></h3>';
                     str += '<p>' + this.sales + '万</p>';
                     str += '<div class="item-pean-footer">';
                     if (this.changeCost >= 0) {
@@ -144,15 +212,15 @@ function data() {
                     }
                     str += '</div></a></li>';
                 });
-                $('#businessSales').html(str);
+                $('#businessSales').append(str);
                 str = '';
                 $.each(res.businessConcept, function(index) {
                     // console.log(this,index);
-                    str += '<li class="col-33 item-pean"><a href="optional.html?id=' + this.id + '&pid=' + this.areaId + '&pName=' + privice + '&sId=' + this.conceptId + '&time=' + date + '&AP=getSalesBreedInfo&title=' + this.conceptName + '" class="item-link external">';
+                    str += '<li class="col-33 item-pean"><a href="optional.html?id=' + this.id + '&areaId=' + this.areaId + '&pName=' + privice + '&sId=' + this.conceptId + '&time=' + date + '&AP=getConceptBreedInfo&title=' + this.conceptName + '" class="item-link external">';
                     if (index === 0) {
                         str += '<span class="top"><i class="fa fa-trophy"></i></span>';
                     }
-                    str += '<h3>' + this.conceptName + '</h3>';
+                    str += '<h3 class="scroll-title"><span>' + this.conceptName + '</span></h3>';
                     str += '<p>' + this.sales + '万</p>';
                     str += '<div class="item-pean-footer">';
                     if (this.changeCost >= 0) {
@@ -167,7 +235,7 @@ function data() {
                     }
                     str += '</div></a></li>';
                 })
-                $('#businessConcept').html(str);
+                $('#businessConcept').append(str);
                 str = '';
                 $.each(res.businessBreedUp, function() {
                     str += '<li class="item-content" data-id="' + this.id + '" data-aid = "' + this.areaId + '"><div class="item-inner">';
@@ -183,7 +251,7 @@ function data() {
                     str += '<div class="add ' + (this.isOpt === 0 ? 'hidden' : '') + '"><i class="fa fa-check-circle fa-lg"></i></div>';
                     str += '</div></li>';
                 })
-                $('#businessBreedUp').html(str);
+                $('#businessBreedUp').append(str);
                 str = '';
                 $.each(res.businessBreedDown, function() {
                     str += '<li class="item-content" data-id="' + this.id + '" data-aid = "' + this.areaId + '"><div class="item-inner">';
@@ -195,69 +263,40 @@ function data() {
                     str += '<div class="add ' + (this.isOpt === 0 ? 'hidden' : '') + '"><i class="fa fa-check-circle fa-lg"></i></div>';
                     str += '</div></li>';
                 })
-                $('#businessBreedDown').html(str);
-                setTimeout(function() {
-                    $.hidePreloader();
-                }, 300)
+                $('#businessBreedDown').append(str);
+                $('.scroll-title').overFlowText();
             });
         },
-        getOptionalData: function(cb) {
+        getOptionalData: function(cb, obj) {
             var callback = cb || function() {};
             requestData('business/' + actionApi, {
                 yearMonth: date,
                 areaId: id,
                 salesId: url2obj(location.search).sId,
+                conceptId: url2obj(location.search).sId,
                 pageNo: pN,
+                sidx: obj.sidx,
+                sord: obj.sord,
                 pageSize: pS
             }, function(res, total) {
-                var str = '';
-                $.each(res, function() {
-                    str += '<li class="item-content" data-id="' + this.id + '" data-aid = "' + this.areaId + '"><div class="item-inner">';
-                    str += '<div class="col-6-tym"><span>' + this.genericName + '</span><i class="bradge">' + translateIcoType(this.icoType) + '</i></div>';
-                    str += '<div class="col-4-scgm">' + this.sales + '万</div>';
-                    str += '<div class="col-4-scfe">' + this.marketMth + '%</div>';
-                    if (this.change >= 0) {
-                        str += '<div class="col-4-zdf z">+' + this.changeStatus + '%</div>';
-                    } else {
-                        str += '<div class="col-4-zdf d">- ' + this.changeStatus + '%</div>';
-                    }
-                    str += '<div class="col-4-zdf">' + this.ev + '</div>';
-                    str += '<div class="add ' + (this.isOpt !== 0 ? 'hidden' : '') + '" onClick="addAction(this)"><i class="fa fa-plus-circle fa-lg"></i></div>';
-                    str += '<div class="add ' + (this.isOpt === 0 ? 'hidden' : '') + '"><i class="fa fa-check-circle fa-lg"></i></div>';
-                    str += '</div></li>';
-                });
+                callback(res, total);
+                console.log(pN);
                 pN++;
-                $(str).appendTo($('#getSalesBreedInfo'));
-                callback(total);
             });
         },
         // 分类涨幅榜
-        getRiseData: function(cb) {
+        getRiseData: function(cb, obj) {
             var callback = cb || function() {};
             requestData('business/' + actionApi, {
                 yearMonth: date,
                 areaId: id,
+                sidx: obj.sidx,
+                sord: obj.sord,
                 pageNo: pN,
                 pageSize: pS
             }, function(res, total) {
-                var str = '';
-                $.each(res, function() {
-                    str += '<li class="item-content no-edit"><div class="item-inner">';
-                    str += '<div class="col-5-tym no-add"><span>' + (this.salesName || this.conceptName) + '</span><i class="bradge">' + translateIcoType(this.icoType) + '</i></div>';
-                    str += '<div class="col-4-scgm">' + this.sales + '万</div>';
-                    str += '<div class="col-4-scfe">' + this.marketMth + '%</div>';
-                    if (this.change >= 0) {
-                        str += '<div class="col-4-zdf z">+' + this.changeStatus + '%</div>';
-                    } else {
-                        str += '<div class="col-4-zdf d">- ' + this.changeStatus + '%</div>';
-                    }
-                    str += '<div class="col-4-zdf">' + this.ev + '</div>';
-                    str += '</div></li>';
-                })
-                $(str).appendTo($('#businessSalesInfo'));
-                // console.log();
                 pN++;
-                callback(total);
+                callback(res, total);
             });
         },
         //查看产品自选
@@ -269,7 +308,19 @@ function data() {
                 pageSize: pS
             }, function(res, total) {
                 pN++;
-                callback(res,total,date);
+                callback(res, total, date);
+            })
+        },
+        // 查看自选产品样例数据
+        getDefaultOrderBreedInfo: function(cb) {
+            var callback = cb || function() {};
+            requestData('business/getDefaultOrderBreedInfo', {
+                yearMonth: date,
+                pageNo: pN,
+                pageSize: pS
+            }, function(res, total) {
+                pN++;
+                callback(res, total, date);
             })
         },
         // 删除自选产品
@@ -307,7 +358,7 @@ function data() {
             })
         },
         //删除地区品种医院信息接口
-        deleteUserBreedHosInfo:function(arr,cb){
+        deleteUserBreedHosInfo: function(arr, cb) {
             var callback = cb || function() {};
             console.log(arr);
             requestData('business/deleteUserBreedHosInfo', {
@@ -317,18 +368,18 @@ function data() {
             })
         },
         //查看自选医院列表
-        getUserBreedHospitalInfo:function(cb){
-          var callback = cb || function() {};
+        getUserBreedHospitalInfo: function(cb) {
+            var callback = cb || function() {};
             requestData('business/getUserBreedHospitalInfo', {
-                id:url2obj(location.search).id,
-                breedId:url2obj(location.search).bId,
-                areaId:url2obj(location.search).aId,
-                type:url2obj(location.search).type,
+                id: url2obj(location.search).id,
+                breedId: url2obj(location.search).bId,
+                areaId: url2obj(location.search).aId,
+                type: url2obj(location.search).type,
                 pageNo: pN,
                 pageSize: pS
             }, function(res, total) {
                 pN++;
-                callback(res,total);
+                callback(res, total);
             })
         },
         //自选医院列表
@@ -338,33 +389,21 @@ function data() {
                 pageNo: pN,
                 pageSize: pS
             }, function(res, total) {
-                var str = '';
-                console.log(res);
-                $.each(res, function() {
-                    str += '<li class="item-content no-edit"><div class="item-inner">';
-                    str += '<div class="col-4-ds"><span>' + this.areaName + '</span></div>';
-                    str += '<div class="col-4-tym has-add">' + this.genericName + '<i class="bradge">' + translateIcoType(this.routeIcoType) + '</i></div>';
-                    str += '<div class="yxyy"><a href="#">' + this.hospitalCode + ' ' + this.hospitalName + '<i class="bradge no-bg">' + translateIcoType(this.hosIcoType) + '</i></a></div>';
-                    str += '<div class="add "' + (this.lockStatus !== 0 ? 'hidden' : '') + ' onclick="unlockAction(this)"><i class="fa fa-lock fa-lg"></i></div>';
-                    str += '<div class="add "' + (this.lockStatus === 0 ? 'hidden' : '') + '><i class="fa fa-unlock fa-lg"></i></div>';
-                    str += '</div></li>';
-                })
-                $(str).appendTo($('#getUserHostInfo'));
                 pN++;
-                callback(total);
+                callback(res, total);
             })
         },
         // 查询地区品种医院信息
-        searchUserBreedHospitalInfo:function(key,cb){
+        searchUserBreedHospitalInfo: function(key, cb) {
             var callback = cb || function() {};
-            requestData('business/searchUserBreedHospitalInfo',{
-                breedId:url2obj(location.search).bId,
-                areaId:url2obj(location.search).aId,
-                hospitalName:encode(key),
-                pageNo:pN,
-                pageSize:pS
-            },function(res,total){
-                callback(res,total);
+            requestData('business/searchUserBreedHospitalInfo', {
+                breedId: url2obj(location.search).bId,
+                areaId: url2obj(location.search).aId,
+                hospitalName: encode(key),
+                pageNo: pN,
+                pageSize: pS
+            }, function(res, total) {
+                callback(res, total);
                 pN++;
             })
         },
@@ -379,13 +418,13 @@ function data() {
             })
         },
         //添加医院数据接口
-        insertUserBreedHosInfo:function(obj){
+        insertUserBreedHosInfo: function(obj) {
             var o = obj;
             requestData('business/insertUserBreedHosInfo', {
                 breedId: $(o).parents('li').data('id'),
-                hospitalId:$(o).parents('li').data('hid'),
+                hospitalId: $(o).parents('li').data('hid'),
                 areaId: $(o).parents('li').data('aid'),
-                orderBreedId:url2obj(location.search).orderId,
+                orderBreedId: url2obj(location.search).orderId,
             }, function() {
                 addAnimate(o);
             })
@@ -405,10 +444,16 @@ function data() {
                 pageNo: pN,
                 pageSize: 10
             }, function(res, total) {
+                if(res.length == 0){
+                  noDataFn();
+                  return;
+                }else{
+                  hasDataFn();
+                }
                 var str = '';
                 $.each(res, function() {
                     str += '<li class="item-content" data-id="' + this.id + '" data-aid = "' + this.areaId + '"><div class="item-inner">';
-                    str += '<div class="col-4-ds"><span>' + this.areaName + '</span></div>';
+                    str += '<div class="col-4-ds text-left"><span>' + this.areaName + '</span></div>';
                     str += '<div class="col-3-tym">' + this.genericName + '<i class="bradge">' + translateIcoType(this.icoType) + '</i></div>';
                     str += '<div class="add ' + (this.isOpt !== 0 ? 'hidden' : '') + '" onClick="addAction(this)"><i class="fa fa-plus-circle fa-lg"></i></div>';
                     str += '<div class="add ' + (this.isOpt === 0 ? 'hidden' : '') + '"><i class="fa fa-check-circle fa-lg"></i></div>';
@@ -421,46 +466,69 @@ function data() {
             });
         },
         // 解锁医院
-        insertUserBreedHosLockInfo:function(num,cb){
-            var callback = cb || function(){};
-            requestData('business/insertUserBreedHosLockInfo',{
-                id:num
-            },function(){
+        insertUserBreedHosLockInfo: function(num, cb) {
+            var callback = cb || function() {};
+            requestData('business/insertUserBreedHosLockInfo', {
+                id: num
+            }, function() {
                 callback();
             })
         },
         //查询医院产品信息接口
-        getHosProductInfo:function(cb){
-            var callback = cb || function(){};
-            requestData('business/getHosProductInfo',{
-                hospitalId:url2obj(location.search).hId,
-                breedId:url2obj(location.search).bId,
-                areaId:url2obj(location.search).aId,
-                yearMonth:url2obj(location.search).time,
-                pageNo:pN,
-                pageSize:pS
-            },function(res,total){
-                callback(res,total);
+        getHosProductInfo: function(cb, obj) {
+            var callback = cb || function() {};
+            requestData('business/getHosProductInfo', {
+                hospitalId: url2obj(location.search).hId,
+                breedId: url2obj(location.search).bId,
+                areaId: url2obj(location.search).aId,
+                yearMonth: url2obj(location.search).time,
+                sidx: obj.sidx,
+                sord: obj.sord,
+                pageNo: pN,
+                pageSize: pS
+            }, function(res, total) {
+                callback(res, total);
             })
         },
         // 判断当前数据是否解锁
-        getLockStateInfo:function(cb){
-            var callback = cb || function(){};
-            requestData('business/getLockStateInfo',{
-                id:url2obj(location.search).id
-            },function(res){
+        getLockStateInfo: function(cb) {
+            var callback = cb || function() {};
+            requestData('business/getLockStateInfo', {
+                id: url2obj(location.search).id
+            }, function(res) {
                 callback(res);
             })
         },
         //获取合作用户数据接口
-        getProductPartnerInfo:function(cb){
-            var callback = cb || function(){};
-            requestData('business/getProductPartnerInfo',{
-                breedId:url2obj(location.search).bId,
-                hospitalId:url2obj(location.search).hId
-            },function(res){
+        getProductPartnerInfo: function(cb) {
+            var callback = cb || function() {};
+            requestData('business/getProductPartnerInfo', {
+                breedId: url2obj(location.search).bId,
+                hospitalId: url2obj(location.search).hId
+            }, function(res) {
                 callback(res);
             })
+        },
+        getWxUserInfo: function(cb) {
+            var callback = cb || function() {};
+            requestData('business/getWxUserInfo', {}, function(res) {
+                callback(res);
+            })
+        },
+        //获取用户反馈列表
+        getBusinessFeedBackInfo: function(cb) {
+            var callback = cb || function() {};
+            requestData('business/getBusinessFeedBackInfo', {}, function(res) {
+                callback(res);
+            })
+        },
+        insertBusinessFeedBackInfo: function(msg, cb) {
+            var callback = cb || function() {};
+            requestData('business/insertBusinessFeedBackInfo', {
+                feedContent: msg
+            }, function(res) {
+                callback(res);
+            });
         }
     }
 }

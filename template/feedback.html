@@ -1,0 +1,93 @@
+<!DOCTYPE HTML>
+<html lang="zh_cn">
+  <head>
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,minimal-ui" />
+    <meta charset="utf-8" />
+    <meta name="x5-fullscreen" content="true">
+    <meta name="full-screen" content="yes">
+    <meta http-equiv="pragma" content="no-cache">
+    <title>意见反馈</title>
+    <link href="../lib/light7/css/light7.min.css" rel="stylesheet" />
+    <link href="../lib/fontAw/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="../dist/css/all.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div class="page">
+      <div class="content has-footer">
+          <div class="center">
+            <ul class="feedback">
+              <li>
+                <div class="feedback-user left clearfix">
+                  <img src="../src/images/logo.jpg"/>
+                  <div class="feedback-info">感谢您关注药市通，在使用过程中有任何反馈您读可以发信息给我，谢谢！</div>
+                </div>
+                <p class="feedback-time">2016-04-20 10:30</p>
+              </li>
+            </ul>
+          </div>
+      </div>
+      <div class="bar bar-footer">
+        <div class="searchbar">
+          <a class="searchbar-cancel" onclick="sendMessage(this)">发送</a>
+          <div class="search-input">
+            <label class="icon icon-edit" for="search"></label>
+            <input type="text" id="message" placeholder=''/>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- <script src="dist/js/jquery.min.js"></script> -->
+    <script type="text/javascript" src="../src/js/jweixin-1.0.0.js"></script>
+    <script src="http://www.light7.cn/assets/js/zepto.js"></script>
+    <script src="../lib/light7/js/light7.js"></script>
+    <script type="text/javascript" src="../lib/light7/js/light7-city-picker.min.js" charset="utf-8"></script>
+    <script type="text/javascript" src="../src/js/common.js"></script>
+    <script type="text/javascript" src="../src/js/data.api.js"></script>
+    <script src="../src/js/all.js"></script>
+    <script type="text/javascript">
+      dataApi.getBusinessFeedBackInfo(function(data){
+        renderDom(data);
+      });
+      //发送留言
+      function sendMessage(obj){
+          var $this = $(obj);
+          var msg = $('#message').val();
+          dataApi.insertBusinessFeedBackInfo(msg,function(data){
+            sendSuccessAnimate(msg,data);
+          });
+      }
+      function sendSuccessAnimate(msg,data){
+        var str = '<li><div class="feedback-user right">';
+            str += '<img src="'+data.headImageUrl+'"/><div class="feedback-info">'+msg+'</div></div><p class="feedback-time">'+data.createDate+'</p></li>';
+          $(str).appendTo($('.feedback'));
+          $('#message').val('');
+          isScroll();
+      };
+      function renderDom(data){
+        var str = '';
+        console.log(data);
+        $.each(data,function(){
+          console.log(this.isReplay);
+          if(this.isReplay != 0){
+            str += '<li><div class="feedback-user left clearfix"><img src="../src/images/logo.jpg"/>';
+            str += '<div class="feedback-info">'+this.feedContent+'</div></div><p class="feedback-time">'+this.createDate+'</p></li>';
+          }else{
+            str += '<li><div class="feedback-user right clearfix">';
+            str += '<img src="'+this.headImageUrl+'"/><div class="feedback-info">'+this.feedContent+'</div></div><p class="feedback-time">'+ this.createDate +'</p></li>';
+          };
+        })
+        $(str).appendTo($('.feedback'));
+        isScroll();
+      }
+
+      function isScroll(){
+        var _p = $('.content').height();
+        var _s = $('.center').height();
+        var desc = _s - _p;
+        if(desc > 0){
+          $('.content').scrollTop(desc);
+        }
+      }
+    </script>
+  </body>
+</html>

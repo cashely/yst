@@ -5,6 +5,7 @@
     <meta charset="utf-8" />
     <meta name="x5-fullscreen" content="true">
     <meta name="full-screen" content="yes">
+    <meta http-equiv="pragma" content="no-cache">
     <title>个人中心</title>
     <link href="../lib/light7/css/light7.min.css" rel="stylesheet" />
     <link href="../lib/fontAw/css/font-awesome.min.css" rel="stylesheet" />
@@ -18,12 +19,12 @@
               <ul>
                 <li>
                   <a href="#" class="item-user-block">
-                    <div class="item-media"><img src="http://gqianniu.alicdn.com/bao/uploaded/i4//tfscom/i3/TB10LfcHFXXXXXKXpXXXXXXXXXX_!!0-item_pic.jpg_250x250q60.jpg" style='width: 3rem;'></div>
+                    <div class="item-media"><img id="userImg" src="../src/images/logo.jpg" style='width: 3rem;'></div>
                     <div class="item-inner">
                       <div class="item-title-row">
                         <h3>微信号</h3>
                       </div>
-                      <div class="item-text">******辣条丶</div>
+                      <div class="item-text" id="userName">******</div>
                     </div>
                   </a>
                 </li>
@@ -45,49 +46,64 @@
             </div>
             <div class="list-block" style="margin-top:30px">
               <ul>
-                <li class="item-content">
-                  <div class="item-inner">
+                <li class="item-content item-link">
+                  <a class="item-inner external" href="feedback.html">
                     <div class="item-title"><i class="fa fa-fw fa-comments fa-lg color-warning"></i> 意见反馈</div>
-                  </div>
+                  </a>
                 </li>
                 <li class="item-content">
                   <div class="item-inner">
                     <div class="item-title"><i class="fa fa-fw fa-question-circle fa-lg color-danger"></i> 帮助中心</div>
                   </div>
                 </li>
+                <!-- <li class="item-content" onclick="shareAction()">
+                  <div class="item-inner">
+                    <div class="item-title"><i class="fa fa-fw fa-share fa-lg"></i> 产品分享</div>
+                  </div>
+                </li> -->
               </ul>
             </div>
           </div>
       </div>
       <!-- 底部工具栏 start -->
       <nav class="bar bar-tab bar-footer">
-        <a class="tab-item" href="select.html">
+        <a class="tab-item external" href="select.html">
           <span class="icon icon-cart"></span>
           <span class="tab-label">自选</span>
         </a>
-        <a class="tab-item" href="#">
+        <a class="tab-item external" href="#">
           <span class="icon icon-app"></span>
           <span class="tab-label">产品</span>
         </a>
-        <a class="tab-item" href="#">
+        <a class="tab-item external" href="index.html">
+          <div class="index-obj">
+            <span class="icon icon-browser"></span>
+            <span class="tab-label">行情</span>
+          </div>
+        </a>
+        <a class="tab-item external" href="#">
           <span class="icon icon-card"></span>
           <span class="tab-label">医院</span>
         </a>
-        <a class="tab-item" href="index.html">
-          <span class="icon icon-browser"></span>
-          <span class="tab-label">行情</span>
-        </a>
-        <a class="tab-item active" href="javascript:void(0)">
+        <a class="tab-item external active" href="javascript:void(0)">
           <span class="icon icon-friends"></span>
           <span class="tab-label">个人中心</span>
         </a>
       </nav>
     </div>
     <!-- <script src="dist/js/jquery.min.js"></script> -->
-    <script src="http://cdn.bootcss.com/zepto/1.0rc1/zepto.min.js"></script>
-    <script src="../lib/light7/js/light7.min.js"></script>
+    <script type="text/javascript" src="../src/js/jweixin-1.0.0.js"></script>
+    <script src="http://www.light7.cn/assets/js/zepto.js"></script>
+    <script src="../lib/light7/js/light7.js"></script>
     <script type="text/javascript" src="../lib/light7/js/light7-city-picker.min.js" charset="utf-8"></script>
+    <script type="text/javascript" src="../src/js/common.js"></script>
     <script type="text/javascript" src="../src/js/data.api.js"></script>
     <script src="../src/js/all.js"></script>
+    <script type="text/javascript">
+      dataApi.getWxUserInfo(function(data){
+        document.getElementById('userImg').setAttribute('src',data.imgUrl);
+        document.getElementById('userName').innerText = data.userName;
+      });
+    </script>
   </body>
 </html>

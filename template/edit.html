@@ -5,6 +5,7 @@
         <meta charset="utf-8"/>
         <meta content="true" name="x5-fullscreen">
             <meta content="yes" name="full-screen">
+            <meta http-equiv="pragma" content="no-cache">
                 <title>
                     自选
                 </title>
@@ -54,12 +55,8 @@
                 <a class="button button-success active pull-right external" href="select.html" id="closeEdit">
                     完成
                 </a>
-                <button class="button button-link pull-right" onclick="actionDelete()">
-                    删除(
-                    <span id="totalSelect">
-                        0
-                    </span>
-                    )
+                <button class="button button-danger pull-right" onclick="actionDelete()">
+                    删除(<span id="totalSelect">0</span>)
                 </button>
             </div>
             <!-- 底部操作栏 end -->

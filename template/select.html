@@ -5,6 +5,7 @@
     <meta charset="utf-8" />
     <meta name="x5-fullscreen" content="true">
     <meta name="full-screen" content="yes">
+    <meta http-equiv="pragma" content="no-cache">
     <title>自选</title>
     <link href="../lib/light7/css/light7.min.css" rel="stylesheet" />
     <link href="../lib/fontAw/css/font-awesome.min.css" rel="stylesheet" />
@@ -14,18 +15,18 @@
     <div class="page">
       <!-- 头部筛选 start -->
       <header class="bar bar-nav select-header">
-        <div class="row no-gutter">
+        <div class="row no-gutter" style="margin-right:-.5rem">
           <div class="col-60">
             <div class="buttons-row">
               <a href="add.html" id="add" class="external button">添加</a></a>
               <a href="edit.html" id="edit" class="external button">编辑</a>
-              <a href="list.html" id="list" class="external button">医院列表</a>
+              <a href="list.html" id="list" class="external button">医院</a>
             </div>
           </div>
           <div class="col-40">
             <div class="calendar-header">
               <i class="fa fa-calendar"></i>
-              <input type="text" class="date-input" id="my-input"/>
+              <input type="button" class="date-input" id="my-input"/>
             </div>
           </div>
         </div>
@@ -34,10 +35,10 @@
       <!-- 二级菜单 start -->
       <div class="bar bar-header-secondary select-header-secondary">
         <div class="row no-gutter table-row-header no-edit">
-          <div class="col-4-ds">地市</div>
+          <div class="col-4-ds" style="text-align:left">地市</div>
           <div class="col-5-tym no-add">通用名</div>
-          <div class="col-4-scgm">市场规模</div>
-          <div class="col-4-zdf">涨跌幅<i class="fa fa-sort"></i></div>
+          <div class="col-4-scgm sort" data-sortName="sales">市场规模</div>
+          <div class="col-4-zdf sort" data-sortName="change">涨跌幅</div>
           <div class="yxyy" onClick="hideSblings(this)">
             <a href="#">已选医院</a>
             <a href="#" class="hidden">解锁医院</a>
@@ -72,15 +73,17 @@
           <span class="icon icon-app"></span>
           <span class="tab-label">产品</span>
         </a>
+        <a class="tab-item external" href="index.html">
+          <div class="index-obj">
+            <span class="icon icon-browser"></span>
+            <span class="tab-label">行情</span>
+          </div>
+        </a>
         <a class="tab-item external" href="#">
           <span class="icon icon-card"></span>
           <span class="tab-label">医院</span>
         </a>
-        <a class="tab-item external" href="index.html">
-          <span class="icon icon-browser"></span>
-          <span class="tab-label">行情</span>
-        </a>
-        <a class="tab-item external" href="#">
+        <a class="tab-item external" href="user.html">
           <span class="icon icon-friends"></span>
           <span class="tab-label">个人中心</span>
         </a>
@@ -104,28 +107,20 @@
     <script type="text/javascript">
     var loading = false;
     $.attachInfiniteScroll('.infinite-scroll');
-     dataApi.getOrderBreedInfo(function(data,totalNum,date){
-        renderDom(data,date);
-        if(($('#getOrderBreedInfo li').length+$('#getOrderBreedInfoYl li').length) >= totalNum){
-          $.detachInfiniteScroll($('.infinite-scroll'));
-          $('.infinite-scroll-preloader').remove();
-        }
-      });
      $(document).on('infinite', '.infinite-scroll',function() {
         if (loading) return;
         loading = true;
-        dataApi.getOrderBreedInfo(function(data,totalNum,date){
+        dataApi.getOrderBreedInfo(function(data,total,date){
           loading = false;
-          renderDom(data,date);
-          if(($('#getOrderBreedInfo li').length+$('#getOrderBreedInfoYl li').length) >= totalNum){
-            console.log('auto');
-            $.detachInfiniteScroll($('.infinite-scroll'));
-            $('.infinite-scroll-preloader').remove();
-          }else{
-            pn ++;
-          }
+          renderDom(data,total,date);
         });
      });
+     $('.infinite-scroll').trigger('infinite');
+
+     $(document).on('click','.sort',function(event){
+        $('#getOrderBreedInfo').empty();
+        sortFn(event.target);
+      });
 
      //读取医院数量
      dataApi.getUserLockInfo(function(d){
@@ -133,40 +128,58 @@
       $('#readyHospital').text(d.userLockCount);
      });
 
-     function renderDom(data,date){
-      var str = '',ysStr = '';
-      $.each(data, function(index) {
-          if(index === 0 && $('#getOrderBreedInfoYl li').length == 0){
-            ysStr += '<li class="item-content  no-edit yl"><a class="external" href="state.html?id='+this.id+'&bId='+this.breedId+'&aId='+this.areaId+'&type=0&title='+this.areaName+' '+this.genericName+'&time='+date+'"><div class="item-inner">';
-            ysStr += '<div class="col-4-ds"><span>' + this.areaName + '</span></div>';
-            ysStr += '<div class="col-5-tym no-add">' + this.genericName + '<i class="bradge">' + translateIcoType(this.icoType) + '</i></div>';
-            ysStr += '<div class="col-4-scgm">' + this.sales + '万</div>';
-            if (this.change >= 0) {
-                ysStr += '<div class="col-4-zdf z">' + this.change + '%</div>';
-            } else {
-                ysStr += '<div class="col-4-zdf d">' + this.change + '%</div>';
-            }
-            ysStr += '<div class="yxyy text-center">' + this.lockCount + '/' + this.hosCount + '</div>';
-            ysStr += '<div class="yxyy hidden">' + this.userLockCount + '/' + this.hosCount + '</div>';
-            ysStr += '</div></a></li>';
-          }else{
-            str += '<li class="item-content  no-edit"><a class="external" href="state.html?id='+this.id+'&bId='+this.breedId+'&aId='+this.areaId+'&type=1&title='+this.areaName+' '+this.genericName+'&time='+date+'"><div class="item-inner">';
-            str += '<div class="col-4-ds"><span>' + this.areaName + '</span></div>';
-            str += '<div class="col-5-tym no-add">' + this.genericName + '<i class="bradge">' + translateIcoType(this.icoType) + '</i></div>';
-            str += '<div class="col-4-scgm">' + this.sales + '万</div>';
-            if (this.change >= 0) {
-                str += '<div class="col-4-zdf z">' + this.change + '%</div>';
-            } else {
-                str += '<div class="col-4-zdf d">' + this.change + '%</div>';
-            }
-            str += '<div class="yxyy">' + this.lockCount + '/' + this.hosCount + '</div>';
-            str += '<div class="yxyy hidden">' + this.userLockCount + '/' + this.hosCount + '</div>';
-            str += '</div></a></li>';
-          }
+     //读取样例数据
+     dataApi.getDefaultOrderBreedInfo(function(data,total,date){
+        renderDefaultDom(data,total,date);
+      });
+
+     function renderDom(data,total,date){
+      var str = '';
+      $.each(data, function() {
+        str += '<li class="item-content  no-edit"><a class="item-inner item-link external" href="state.html?id='+this.id+'&bId='+this.breedId+'&aId='+this.areaId+'&type=1&title='+this.areaName+' '+this.genericName+ ' ' + translateIcoType(this.icoType) +'&time='+date+'&iconType='+ translateIcoType(this.icoType)+'">';
+        str += '<div class="col-4-ds text-left"><span>' + this.areaName + '</span></div>';
+        str += '<div class="col-5-tym no-add">' + this.genericName + '<i class="bradge">' + translateIcoType(this.icoType) + '</i></div>';
+        str += '<div class="col-4-scgm">' + this.sales + '万</div>';
+        if (this.change >= 0) {
+            str += '<div class="col-4-zdf z">' + this.change + '%</div>';
+        } else {
+            str += '<div class="col-4-zdf d">' + this.change + '%</div>';
+        }
+        str += '<div class="yxyy">' + this.lockCount + '/' + this.hosCount + '</div>';
+        str += '<div class="yxyy hidden">' + this.userLockCount + '/' + this.hosCount + '</div>';
+        str += '</a></li>';
       })
       $(str).appendTo($('#getOrderBreedInfo'));
-      $(ysStr).appendTo($('#getOrderBreedInfoYl'));
       $('#edit').prop('href', 'edit.html?time=' + date);
+      $('#list').prop('href', 'list.html?time=' + date);
+      try{
+        if(($('#getOrderBreedInfo li').length+$('#getOrderBreedInfoYl li').length) >= total){
+          $.detachInfiniteScroll($('.infinite-scroll'));
+          $('.infinite-scroll-preloader').remove();
+        }
+      }catch(e){
+        console.log(e);
+      }
+     }
+
+
+     function renderDefaultDom(data,total,date){
+      var ysStr = '';
+      $.each(data, function() {
+        ysStr += '<li class="item-content no-edit yl"><a class="item-inner item-link external" href="state.html?id='+this.id+'&bId='+this.breedId+'&aId='+this.areaId+'&type=0&title='+this.areaName+' '+this.genericName+'&time='+date+'">';
+        ysStr += '<div class="col-4-ds text-left"><span>' + this.areaName + '</span></div>';
+        ysStr += '<div class="col-5-tym no-add">' + this.genericName + '<i class="bradge">' + translateIcoType(this.icoType) + '</i></div>';
+        ysStr += '<div class="col-4-scgm">' + this.sales + '万</div>';
+        if (this.change >= 0) {
+            ysStr += '<div class="col-4-zdf z">' + this.change + '%</div>';
+        } else {
+            ysStr += '<div class="col-4-zdf d">' + this.change + '%</div>';
+        }
+        ysStr += '<div class="yxyy text-center">' + this.lockCount + '/' + this.hosCount + '</div>';
+        ysStr += '<div class="yxyy hidden">' + this.userLockCount + '/' + this.hosCount + '</div>';
+        ysStr += '</a></li>';
+      });
+      $(ysStr).appendTo($('#getOrderBreedInfoYl'));
      }
     </script>
   </body>

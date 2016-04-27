@@ -5,6 +5,7 @@
     <meta charset="utf-8" />
     <meta name="x5-fullscreen" content="true">
     <meta name="full-screen" content="yes">
+    <meta http-equiv="pragma" content="no-cache">
     <title>添加品种</title>
     <link href="../lib/light7/css/light7.min.css" rel="stylesheet" />
     <link href="../lib/fontAw/css/font-awesome.min.css" rel="stylesheet" />
@@ -15,7 +16,7 @@
       <!-- 头部筛选 start -->
       <header class="bar bar-nav select-header">
           <div class="button-link header-position">
-            <i class="fa fa-map-marker fa-lg"></i><input type="text" value="湖南省" class="readOnly-input" readonly id="globalPrivices" />
+            <i class="fa fa-map-marker fa-lg"></i><input type="button" value="广东省" class="readOnly-input" readonly id="globalPrivices" />
           </div>
           <div class="searchbar">
             <span onclick="actionSearch()" class="searchbar-cancel">确定</span>
@@ -29,7 +30,7 @@
       <!-- 二级菜单 start -->
       <div class="bar bar-header-secondary select-header-secondary">
         <div class="optional-header row no-gutter table-row-header no-edit">
-          <div class="col-4-ds">地市</div>
+          <div class="col-4-ds" style="text-align:left">地市</div>
           <div class="col-3-tym">通用名</div>
         </div>
       </div>
@@ -81,6 +82,7 @@
           });
         });
       })();
+      $('.searchbar-cancel').trigger('click');
       $('.infinite-scroll-preloader').remove();
       function actionSearch(){
         $('#searchOrderBreedInfo').empty();

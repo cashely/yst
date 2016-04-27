@@ -5,7 +5,8 @@
     <meta charset="utf-8" />
     <meta name="x5-fullscreen" content="true">
     <meta name="full-screen" content="yes">
-    <title>广州 阿莫克拉 口服</title>
+    <meta http-equiv="pragma" content="no-cache">
+    <title>添加医院</title>
     <link href="../lib/light7/css/light7.min.css" rel="stylesheet" />
     <link href="../lib/fontAw/css/font-awesome.min.css" rel="stylesheet" />
     <link href="../dist/css/all.css" rel="stylesheet" />
@@ -18,7 +19,7 @@
           <a class="searchbar-cancel" onclick="actionSearchHospital()">确定</a>
           <div class="search-input">
             <label class="icon icon-search" for="search"></label>
-            <input type="search" id='search' placeholder='请输入品种关键字...'/>
+            <input type="search" id='search' placeholder='请输入医院关键字...'/>
           </div>
         </div>
       </header>
@@ -48,6 +49,8 @@
     <script type="text/javascript" src="../src/js/data.api.js"></script>
     <script src="../src/js/all.js"></script>
     <script type="text/javascript">
+      //默认显示搜索结果
+      $('.searchbar-cancel').trigger('click');
       $('.infinite-scroll-preloader').remove();
       function actionSearchHospital(){
         $('#searchUserBreedHospitalInfo').empty();
@@ -55,13 +58,6 @@
           dataApi.reSet();
           var keywords = $('#search').val();
          $.attachInfiniteScroll('.infinite-scroll');
-         dataApi.searchUserBreedHospitalInfo(keywords,function(data,totalNum){
-            renderDom(data);
-            if($('#searchUserBreedHospitalInfo li').length >= totalNum){
-              $.detachInfiniteScroll($('.infinite-scroll'));
-              $('.infinite-scroll-preloader').remove();
-            }
-          });
          $(document).on('infinite', '.infinite-scroll',function() {
             if (loading) return;
             loading = true;
@@ -75,9 +71,15 @@
             });
          });
       }
-
+      $('.infinite-scroll').trigger('infinite');
 
       function renderDom(data){
+        if(data.length == 0){
+          noDataFn();
+          return;
+        }else{
+          hasDataFn();
+        }
         var str = '';
         $.each(data, function() {
             str += '<li class="item-content" data-id="' + url2obj(location.search).bId + '" data-aid = "' + url2obj(location.search).aId + '" data-hid="'+this.id+'"><div class="item-inner">';
