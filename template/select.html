@@ -93,8 +93,7 @@
     <!-- <script src="dist/js/jquery.min.js"></script> -->
     <script src="../src/js/jweixin-1.0.0.js" type="text/javascript">
     </script>
-    <script src="http://cdn.bootcss.com/zepto/1.1.6/zepto.js">
-    </script>
+    <script src="http://light7.org/assets/js/zepto.js"></script>
     <script type="text/javascript" src="../src/js/common.js"></script>
     <script src="../lib/light7/js/light7.js">
     </script>
@@ -113,13 +112,18 @@
         dataApi.getOrderBreedInfo(function(data,total,date){
           loading = false;
           renderDom(data,total,date);
+        },{
+            sidx:$('.table-row-header').data('sidx'),
+            sord:$('.table-row-header').data('sord')
         });
      });
      $('.infinite-scroll').trigger('infinite');
 
      $(document).on('click','.sort',function(event){
-        $('#getOrderBreedInfo').empty();
+        $.attachInfiniteScroll('.infinite-scroll');
+        $('#getOrderBreedInfo li').remove();
         sortFn(event.target);
+        $('.infinite-scroll').trigger('infinite');
       });
 
      //读取医院数量
@@ -140,13 +144,17 @@
         str += '<div class="col-4-ds text-left"><span>' + this.areaName + '</span></div>';
         str += '<div class="col-5-tym no-add">' + this.genericName + '<i class="bradge">' + translateIcoType(this.icoType) + '</i></div>';
         str += '<div class="col-4-scgm">' + this.sales + '万</div>';
-        if (this.change >= 0) {
-            str += '<div class="col-4-zdf z">' + this.change + '%</div>';
-        } else {
-            str += '<div class="col-4-zdf d">' + this.change + '%</div>';
+        if(this.change){
+            if (this.change >= 0) {
+                str += '<div class="col-4-zdf z">' + this.change + '%</div>';
+            } else {
+                str += '<div class="col-4-zdf d"> ' + this.change + '%</div>';
+            }
+        }else{
+            str += '<div class="col-4-zdf"> ' + this.change + '</div>';
         }
         str += '<div class="yxyy">' + this.lockCount + '/' + this.hosCount + '</div>';
-        str += '<div class="yxyy hidden">' + this.userLockCount + '/' + this.hosCount + '</div>';
+        str += '<div class="yxyy hidden">' + this.userLockCount + '/' + this.lockCount + '</div>';
         str += '</a></li>';
       })
       $(str).appendTo($('#getOrderBreedInfo'));
@@ -155,7 +163,7 @@
       try{
         if(($('#getOrderBreedInfo li').length+$('#getOrderBreedInfoYl li').length) >= total){
           $.detachInfiniteScroll($('.infinite-scroll'));
-          $('.infinite-scroll-preloader').remove();
+          $('.infinite-scroll-preloader').hide();
         }
       }catch(e){
         console.log(e);
@@ -166,7 +174,7 @@
      function renderDefaultDom(data,total,date){
       var ysStr = '';
       $.each(data, function() {
-        ysStr += '<li class="item-content no-edit yl"><a class="item-inner item-link external" href="state.html?id='+this.id+'&bId='+this.breedId+'&aId='+this.areaId+'&type=0&title='+this.areaName+' '+this.genericName+'&time='+date+'">';
+        ysStr += '<li class="item-content no-edit yl"><a class="item-inner item-link external" href="state.html?id='+this.id+'&bId='+this.breedId+'&aId='+this.areaId+'&type=0&title='+this.areaName+' '+this.genericName + ' ' + translateIcoType(this.icoType) +'&time='+date+'&type='+ this.type+'">';
         ysStr += '<div class="col-4-ds text-left"><span>' + this.areaName + '</span></div>';
         ysStr += '<div class="col-5-tym no-add">' + this.genericName + '<i class="bradge">' + translateIcoType(this.icoType) + '</i></div>';
         ysStr += '<div class="col-4-scgm">' + this.sales + '万</div>';
@@ -176,7 +184,7 @@
             ysStr += '<div class="col-4-zdf d">' + this.change + '%</div>';
         }
         ysStr += '<div class="yxyy text-center">' + this.lockCount + '/' + this.hosCount + '</div>';
-        ysStr += '<div class="yxyy hidden">' + this.userLockCount + '/' + this.hosCount + '</div>';
+        ysStr += '<div class="yxyy hidden">' + this.userLockCount + '/' + this.lockCount + '</div>';
         ysStr += '</a></li>';
       });
       $(ysStr).appendTo($('#getOrderBreedInfoYl'));

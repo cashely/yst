@@ -1,19 +1,15 @@
 <!DOCTYPE HTML>
-<html lang="zh_cn">
+<html>
   <head>
-    <meta content="width=device-width,initial-scale=1,user-scalable=no,minimal-ui" name="viewport"/>
-    <meta charset="utf-8"/>
-    <meta content="true" name="x5-fullscreen">
-    <meta content="yes" name="full-screen">
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,minimal-ui" />
+    <meta charset="utf-8" />
+    <title>12132</title>
+    <meta name="x5-fullscreen" content="true">
+    <meta name="full-screen" content="yes">
     <meta http-equiv="pragma" content="no-cache">
-    <title>
-    加载中...
-    </title>
     <link href="../lib/light7/css/light7.min.css" rel="stylesheet"/>
     <link href="../lib/fontAw/css/font-awesome.min.css" rel="stylesheet"/>
     <link href="../dist/css/all.css" rel="stylesheet"/>
-    </meta>
-    </meta>
   </head>
   <body>
     <div class="page">
@@ -105,8 +101,7 @@
     <!-- <script src="dist/js/jquery.min.js"></script> -->
     <script src="../src/js/jweixin-1.0.0.js" type="text/javascript">
     </script>
-    <script src="http://cdn.bootcss.com/zepto/1.1.6/zepto.js">
-    </script>
+    <script src="http://light7.org/assets/js/zepto.js"></script>
     <script src="../lib/light7/js/light7.js">
     </script>
     <script charset="utf-8" src="../lib/light7/js/light7-city-picker.min.js" type="text/javascript">
@@ -116,15 +111,14 @@
     <script src="../src/js/all.js">
     </script>
     <script type="text/javascript">
-    // console.log()
+    document.title = '医院编码:'+decode(url2obj(location.search).title);
     // 判断是否需要显示解锁按钮
     function lockStateInfo(){
-    dataApi.getLockStateInfo(function(res){
-    console.log(res);
-    if(res.count != 0){
-    $('.unlock-button').remove();
-    }
-    });
+      dataApi.getLockStateInfo(function(res){
+        if(res.count != 0 || url2obj(location.search).type == 0){
+        $('.unlock-button').remove();
+        }
+      });
     }
     lockStateInfo();
     var loading = false;
@@ -140,8 +134,10 @@
     });
     $('.infinite-scroll').trigger('infinite');
     $(document).on('click','.sort',function(event){
-    $('#getHosProductInfo li').remove();
-    sortFn(event.target);
+      $.attachInfiniteScroll('.infinite-scroll');
+      $('#getHosProductInfo li').remove();
+      sortFn(event.target);
+      $('.infinite-scroll').trigger('infinite');
     });
     //读取医院数量
     dataApi.getUserLockInfo(function(d){
@@ -149,28 +145,34 @@
     $('#readyHospital').text(d.userLockCount);
     });
     function unlockSelfAction(obj) {
-    var $this = $(obj);
-    var num = $('#allHospital').text();
-    $.confirm('您当前可解锁医院数为' + num + '个，是否解锁?', '提示', function() {
-    dataApi.insertUserBreedHosLockInfo(($this.parents('li').data('id') || url2obj(location.search).id), function() {
-    $.attachInfiniteScroll('.infinite-scroll');
-    $(document).on('infinite', '.infinite-scroll',function() {
-    
-    dataApi.getHosProductInfo(function(data,total){
-    renderDom(data,total);
-    },{
-    sidx:$('.table-row-header').data('sidx'),
-    sord:$('.table-row-header').data('sord')
-    });
-    });
-    $('.infinite-scroll').trigger('infinite');
-    //读取医院数量
-    dataApi.getUserLockInfo(function(d){
-    $('#allHospital').text(d.lockCount);
-    $('#readyHospital').text(d.userLockCount);
-    });
-    });
-    });
+      var $this = $(obj);
+      var num = $('#allHospital').text();
+      
+        if(num != 0){
+          $.confirm('您当前可解锁医院数为' + num + '个，是否'+(num !=0 ? '解锁' : '开通服务')+'?', '提示', function() {
+            dataApi.insertUserBreedHosLockInfo(($this.parents('li').data('id') || url2obj(location.search).id), function() {
+              $.attachInfiniteScroll('.infinite-scroll');
+              $(document).on('infinite', '.infinite-scroll',function() {
+                dataApi.getHosProductInfo(function(data,total){
+                  $('#getHosProductInfo li').remove();
+                  $('.unlock-button').remove();
+                  renderDom(data,total);
+                },{
+                sidx:$('.table-row-header').data('sidx'),
+                sord:$('.table-row-header').data('sord')
+                });
+              });
+              $('.infinite-scroll').trigger('infinite');
+              //读取医院数量
+              dataApi.getUserLockInfo(function(d){
+                $('#allHospital').text(d.lockCount);
+                $('#readyHospital').text(d.userLockCount);
+              });
+            });
+          },function(){});
+        }else{
+          location.href="contact.html";
+        }
     }
     // 获取合作用户数据
     function getUserProvide(){
@@ -185,15 +187,15 @@
     var str = '';
     console.log(data);
     if(data.length == 0 ){
-      $('.center').hide(0);
+    $('.center').hide(0);
     }else{
-      $('.center').show(0);
+    $('.center').show(0);
     }
     if (loading) return;
     loading = true;
     $.each(data, function() {
     str += '<li class="item-content no-edit"><div class="item-inner">';
-      str += '<div class="col-4-tym"><span class="break">'+this.drugName+' '+this.spec+'*'+this.pack+'</span><span class="jc">'+this.manufactorShort+'</span>'
+      str += '<div class="col-4-tym"><span class="break">'+this.drugName+' '+this.spec+'*'+this.pack+'</span><span class="jc">'+(this.brandName || this.manufactorShort)+'</span>'
       if(this.singleBase){
       str += '<i class="bradge">基</i>';
       }
@@ -202,23 +204,31 @@
       }
     str += '</div>';
     str += '<div class="col-4-scfe">';
-      str += '<span>'+this.marketMth+'</span>';
-      str += '<span class="hidden">'+this.marketYtd+'</span>';
-      str += '<span class="hidden">'+this.marketMat+'</span>';
+      str += '<span>'+this.marketMth+'%</span>';
+      str += '<span class="hidden">'+this.marketYtd+'%</span>';
+      str += '<span class="hidden">'+this.marketMat+'%</span>';
     str += '</div>';
-    if(this.change >= 0){
-    str += '<div class="col-4-zdf z">'+this.change+'%</div>';
+    if(this.change){
+        if (this.change >= 0) {
+            str += '<div class="col-4-zdf z">' + this.change + '%</div>';
+        } else {
+            str += '<div class="col-4-zdf d"> ' + this.change + '%</div>';
+        }
     }else{
-    str += '<div class="col-4-zdf d">'+this.change+'%</div>';
+        str += '<div class="col-4-zdf"> ' + this.change + '</div>';
     }
-    str += '<div class="col-4-ev">'+this.ev+'</div>';
+    if(this.ev >= 100){
+      str += '<div class="col-4-ev z">'+this.ev+'</div>';
+    }else{
+      str += '<div class="col-4-ev d">'+this.ev+'</div>';
+    }
   str += '</div></li>';
   });
   $(str).appendTo($('#getHosProductInfo'));
   loading = false;
   if($('#getHosProductInfo li').length >= total){
   $.detachInfiniteScroll($('.infinite-scroll'));
-  $('.infinite-scroll-preloader').remove();
+  $('.infinite-scroll-preloader').hide();
   }
   }
   </script>

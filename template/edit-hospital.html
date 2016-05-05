@@ -43,6 +43,9 @@
                 <button class="button button-link pull-left" onclick="selectAll()">
                     全选
                 </button>
+                <button class="button button-link disabled pull-left" onclick="diselectAll()">
+                    全不选
+                </button>
                 <a class="button button-success active pull-right external" href="state.html" id="closeHosEdit">
                     完成
                 </a>
@@ -55,8 +58,7 @@
         <!-- <script src="dist/js/jquery.min.js"></script> -->
         <script src="../src/js/jweixin-1.0.0.js" type="text/javascript">
         </script>
-        <script src="http://www.light7.cn/assets/js/zepto.js">
-        </script>
+        <script src="http://light7.org/assets/js/zepto.js"></script>
         <script src="../lib/light7/js/light7.js">
         </script>
         <script charset="utf-8" src="../lib/light7/js/light7-city-picker.min.js" type="text/javascript">
@@ -82,8 +84,11 @@
                   // console.log(totalNum === 0);
                   console.log(totalNum);
                   $.detachInfiniteScroll($('.infinite-scroll'));
-                  $('.infinite-scroll-preloader').remove();
+                  $('.infinite-scroll-preloader').hide();
                 };
+              },{
+                sidx: 'lockStatus',
+                sord: 'asc'
               });
              $('#addHospital').prop('href', 'add-hospital.html?bId=' + url2obj(location.search).bId+'&aId='+url2obj(location.search).aId +'&orderId='+url2obj(location.search).id);
              $(document).on('infinite', '.infinite-scroll',function() {
@@ -94,8 +99,11 @@
                   renderDom(data);
                   if($('#getUserBreedHospitalInfo li').length >= totalNum){
                     $.detachInfiniteScroll($('.infinite-scroll'));
-                    $('.infinite-scroll-preloader').remove();
+                    $('.infinite-scroll-preloader').hide();
                   }
+                },{
+                  sidx: 'lockStatus',
+                  sord: 'asc'
                 });
              });
 
@@ -105,7 +113,7 @@
                 $.each(data, function() {
                     str += '<li><label class="label-checkbox item-content"><input type="checkbox" value="'+this.id+'" name="my-radio"><div class="item-media"><i class="icon icon-form-checkbox"></i></div><div class="item-inner">';
                     str += '<div class="col-2-tym">'+this.hospitalCode+'('+this.hospitalShortName+')<i class="bradge no-bg">'+translateIcoType(this.icoType)+'</i></div>';
-                    str += '<div class="add "' + (this.lockStatus !== 0 ? 'hidden' : '') + ' onclick="unlockAction(this)"><i class="fa fa-lock fa-lg"></i></div>';
+                    str += '<div class="add "' + (this.lockStatus !== 0 ? 'hidden' : '') + '><i class="fa fa-lock fa-lg"></i></div>';
                     str += '<div class="add "' + (this.lockStatus === 0 ? 'hidden' : '') + '><i class="fa fa-unlock fa-lg"></i></div>';
                     str += '</div></label></li>';
                 });
@@ -114,39 +122,41 @@
 
 
               function actionDeleteHos(){
-                var arr = [];
-                $.each($('#getUserBreedHospitalInfo input:checked'),function(){
-                  arr.push(this.value);
-                });
-                dataApi.deleteUserBreedHosInfo(arr,function(){
-                    $.toast("删除用户医院订单信息成功!");
-                    $('#getUserBreedHospitalInfo li').remove();
-                    totalSelect(0);
-                    setTimeout(function(){
-                      dataApi.reSet();
-                      $.attachInfiniteScroll('.infinite-scroll');
-                       dataApi.getUserBreedHospitalInfo(function(totalNum){
-                          if($('#getUserBreedHospitalInfo li').length >= totalNum){
-                            $.detachInfiniteScroll($('.infinite-scroll'));
-                            $('.infinite-scroll-preloader').remove();
-                          }
-                        });
-                       $(document).on('infinite', '.infinite-scroll',function() {
-                          if (loading) return;
-                          loading = true;
-                          dataApi.getUserBreedHospitalInfo(function(totalNum,pn){
-                            loading = false;
+                $.confirm('是否确定删除','提示',function(){
+                  var arr = [];
+                  $.each($('#getUserBreedHospitalInfo input:checked'),function(){
+                    arr.push(this.value);
+                  });
+                  dataApi.deleteUserBreedHosInfo(arr,function(){
+                      $.toast("删除用户医院订单信息成功!");
+                      $('#getUserBreedHospitalInfo li').remove();
+                      totalSelect(0);
+                      setTimeout(function(){
+                        dataApi.reSet();
+                        $.attachInfiniteScroll('.infinite-scroll');
+                         dataApi.getUserBreedHospitalInfo(function(totalNum){
                             if($('#getUserBreedHospitalInfo li').length >= totalNum){
-                              console.log('auto');
                               $.detachInfiniteScroll($('.infinite-scroll'));
                               $('.infinite-scroll-preloader').remove();
-                            }else{
-                              pn ++;
                             }
                           });
-                       });
-                    },2000)
-                })
+                         $(document).on('infinite', '.infinite-scroll',function() {
+                            if (loading) return;
+                            loading = true;
+                            dataApi.getUserBreedHospitalInfo(function(totalNum,pn){
+                              loading = false;
+                              if($('#getUserBreedHospitalInfo li').length >= totalNum){
+                                console.log('auto');
+                                $.detachInfiniteScroll($('.infinite-scroll'));
+                                $('.infinite-scroll-preloader').remove();
+                              }else{
+                                pn ++;
+                              }
+                            });
+                         });
+                      },2000)
+                  })
+                },function(){});
                }
         </script>
     </body>

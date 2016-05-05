@@ -78,8 +78,7 @@
     <!-- <script src="dist/js/jquery.min.js"></script> -->
     <script src="../src/js/jweixin-1.0.0.js" type="text/javascript">
     </script>
-    <script src="http://www.light7.cn/assets/js/zepto.js">
-    </script>
+    <script src="http://light7.org/assets/js/zepto.js"></script>
     <script src="../src/js/common.js" type="text/javascript">
     </script>
     <script src="../lib/light7/js/light7.js">
@@ -96,6 +95,7 @@
     
     $(document).on('infinite', '.infinite-scroll',function() {
       if (loading) return;
+      loading = true;
       dataApi.getOptionalData(function(data,total){
         renderDom(data,total);
       },{
@@ -106,24 +106,32 @@
     $('.infinite-scroll').trigger('infinite');
 
     $(document).on('click','.sort',function(event){
+      $.attachInfiniteScroll('.infinite-scroll');
       $('#getSalesBreedInfo li').remove();
       sortFn(event.target);
       $('.infinite-scroll').trigger('infinite');
     });
     function renderDom(data,total){
       var str = '';
-      loading = true;
       $.each(data, function() {
       str += '<li class="item-content" data-id="' + this.id + '" data-aid = "' + this.areaId + '"><div class="item-inner">';
         str += '<div class="col-6-tym"><span>' + this.genericName + '</span><i class="bradge">' + translateIcoType(this.icoType) + '</i></div>';
         str += '<div class="col-4-scgm">' + this.sales + '万</div>';
         str += '<div class="col-4-scfe">' + this.marketMth + '%</div>';
-        if (this.change >= 0) {
-        str += '<div class="col-4-zdf z">' + this.change + '%</div>';
-        } else {
-        str += '<div class="col-4-zdf d">' + this.change + '%</div>';
+        if(this.change){
+            if (this.change >= 0) {
+                str += '<div class="col-4-zdf z">' + this.change + '%</div>';
+            } else {
+                str += '<div class="col-4-zdf d"> ' + this.change + '%</div>';
+            }
+        }else{
+            str += '<div class="col-4-zdf"> ' + this.change + '</div>';
         }
-        str += '<div class="col-4-zdf">' + this.ev + '</div>';
+        if(this.ev >= 100){
+          str += '<div class="col-4-zdf z">' + this.ev + '</div>';
+        }else{
+          str += '<div class="col-4-zdf d">' + this.ev + '</div>';
+        }
         str += '<div class="add ' + (this.isOpt !== 0 ? 'hidden' : '') + '" onClick="addAction(this)"><i class="fa fa-plus-circle fa-lg"></i></div>';
         str += '<div class="add ' + (this.isOpt === 0 ? 'hidden' : '') + '"><i class="fa fa-check-circle fa-lg"></i></div>';
       str += '</div></li>';
@@ -132,7 +140,7 @@
       loading = false;
       if($('#getSalesBreedInfo li').length >= total){
       $.detachInfiniteScroll($('.infinite-scroll'));
-      $('.infinite-scroll-preloader').remove();
+      $('.infinite-scroll-preloader').hide();
       }
     }
     </script>

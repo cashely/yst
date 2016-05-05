@@ -16,7 +16,7 @@
       <!-- 头部筛选 start -->
       <header class="bar bar-nav select-header">
         <div class="searchbar">
-          <a class="searchbar-cancel" onclick="actionSearchHospital()">确定</a>
+          <a class="searchbar-cancel" onclick="actionSearchHospital()">搜索</a>
           <div class="search-input">
             <label class="icon icon-search" for="search"></label>
             <input type="search" id='search' placeholder='请输入医院关键字...'/>
@@ -31,7 +31,7 @@
         </div>
       </div>
       <!-- 二级菜单 end -->
-      <div class="content" data-distance="100">
+      <div class="content infinite-scroll" data-distance="100">
         <div class="center">
           <div class="list-block item-pean-horizontal">
             <ul class="table-row" id="searchUserBreedHospitalInfo">
@@ -42,7 +42,7 @@
     </div>
     <!-- <script src="dist/js/jquery.min.js"></script> -->
     <script type="text/javascript" src="../src/js/jweixin-1.0.0.js"></script>
-    <script src="http://www.light7.cn/assets/js/zepto.js"></script>
+    <script src="http://light7.org/assets/js/zepto.js"></script>
     <script src="../lib/light7/js/light7.js"></script>
     <script type="text/javascript" src="../lib/light7/js/light7-city-picker.min.js" charset="utf-8"></script>
     <script type="text/javascript" src="../src/js/common.js"></script>
@@ -50,29 +50,32 @@
     <script src="../src/js/all.js"></script>
     <script type="text/javascript">
       //默认显示搜索结果
-      $('.searchbar-cancel').trigger('click');
-      $('.infinite-scroll-preloader').remove();
+      
+      $('.infinite-scroll-preloader').hide();
+      $.attachInfiniteScroll('.infinite-scroll');
+      var keywords = $('#search').val();
+      var loading = false;
       function actionSearchHospital(){
-        $('#searchUserBreedHospitalInfo').empty();
-        var loading = false;
+        $('#searchUserBreedHospitalInfo li').remove();
+        
           dataApi.reSet();
-          var keywords = $('#search').val();
-         $.attachInfiniteScroll('.infinite-scroll');
-         $(document).on('infinite', '.infinite-scroll',function() {
-            if (loading) return;
-            loading = true;
-            dataApi.searchUserBreedHospitalInfo(keywords,function(data,totalNum){
-              renderDom(data); 
-              if($('#searchUserBreedHospitalInfo li').length >= totalNum){
-                $.detachInfiniteScroll($('.infinite-scroll'));
-                $('.infinite-scroll-preloader').remove();
-              }
-              loading = false;
-            });
-         });
+          actionSearchHospital
+          keywords = $('#search').val();
+         $('.infinite-scroll').trigger('infinite');
       }
-      $('.infinite-scroll').trigger('infinite');
-
+      $(document).on('infinite', '.infinite-scroll',function() {
+        if (loading) return;
+        loading = true;
+        dataApi.searchUserBreedHospitalInfo(keywords,function(data,totalNum){
+          renderDom(data); 
+          if($('#searchUserBreedHospitalInfo li').length >= totalNum){
+            $.detachInfiniteScroll($('.infinite-scroll'));
+            $('.infinite-scroll-preloader').hide();
+          }
+          loading = false;
+        });
+     });
+      $('.searchbar-cancel').trigger('click');
       function renderDom(data){
         if(data.length == 0){
           noDataFn();
@@ -83,7 +86,7 @@
         var str = '';
         $.each(data, function() {
             str += '<li class="item-content" data-id="' + url2obj(location.search).bId + '" data-aid = "' + url2obj(location.search).aId + '" data-hid="'+this.id+'"><div class="item-inner">';
-            str += '<div class="col-2-tym">'+this.hospitalName+'('+this.hospitalShortName+')<i class="bradge no-bg">'+translateIcoType(this.icoType)+'</i></div>';
+            str += '<div class="col-2-tym">'+ this.hospitalShortName + '<i class="bradge no-bg">'+translateIcoType(this.icoType)+'</i></div>';
             str += '<div class="add ' + (this.isOpt !== 0 ? 'hidden' : '') + '" onClick="addHosAction(this)"><i class="fa fa-plus-circle fa-lg"></i></div>';
                     str += '<div class="add ' + (this.isOpt === 0 ? 'hidden' : '') + '"><i class="fa fa-check-circle fa-lg"></i></div>';
             str += '</div></li>';

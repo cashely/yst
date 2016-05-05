@@ -647,6 +647,7 @@ body{
   .col-child-2{
     text-align: center;
     line-height: 1;
+    float: none;
     padding-top:.5rem;
   }
 }
@@ -913,4 +914,11 @@ body{
   &.no-add{
     width: 46%;
   }
+}
+.bar-nav .button{
+  top:.25rem;
+}
+.button{
+  height: 1.55rem;
+  line-height: 1.55rem;
 }

@@ -125,19 +125,25 @@ function addHosAction(obj) {
 function unlockAction(obj) {
     var $this = $(obj);
     var num = $('#allHospital').text();
-    $.confirm('您当前可解锁医院数为' + num + '个，是否解锁?', '提示', function() {
-        dataApi.insertUserBreedHosLockInfo(($this.parents('li').data('id') || url2obj(location.search).id), function() {
-            var url = 'unlock-success.html?title='+ (url2obj(location.search).hosCode || $this.parents('li').data('hosCode')) +'&hId=' + ($this.parents('li').data('hId') || url2obj(location.search).hId) + '&bId=' + url2obj(location.search).bId + '&aId=' + url2obj(location.search).aId + '&time=' + url2obj(location.search).time + '&hosCode=' + (url2obj(location.search).hosCode || $this.parents('li').data('hosCode')) + '&id=' + ($this.parents('li').data('id') || url2obj(location.search).id);
-            location.href = url;
+    
+    if(num != 0){
+        $.confirm('您当前可解锁医院数为' + num + '个，是否解锁?', '提示', function() {
+            dataApi.insertUserBreedHosLockInfo(($this.parents('li').data('id') || url2obj(location.search).id), function() {
+                var url = 'unlock-success.html?title='+ (url2obj(location.search).hosCode || $this.parents('li').data('hosCode')) +'&hId=' + ($this.parents('li').data('hId') || url2obj(location.search).hId) + '&bId=' + url2obj(location.search).bId + '&aId=' + url2obj(location.search).aId + '&time=' + url2obj(location.search).time + '&hosCode=' + (url2obj(location.search).hosCode || $this.parents('li').data('hosCode')) + '&id=' + ($this.parents('li').data('id') || url2obj(location.search).id) + '&type=' + url2obj(location.search).type;
+                location.href = url;
+            });
         });
-    });
+    }else{
+        location.href="contact.html";
+    }
+    
 }
 // 解锁
 function getHosInfo(obj) {
     var $this = $(obj);
     var isLock = ($this.parents('li').data('lockStatus') == '1' ? true : false);
-    console.log($this.parents('li').data('lockStatus'));
-    var url = 'unlock-success.html?title='+ (url2obj(location.search).hosCode || $this.parents('li').data('hosCode')) +'&hId=' + ($this.parents('li').data('hId') || url2obj(location.search).hId) + '&bId=' + url2obj(location.search).bId + '&aId=' + url2obj(location.search).aId + '&time=' + url2obj(location.search).time + '&hosCode=' + (url2obj(location.search).hosCode || $this.parents('li').data('hosCode')) + '&id=' + ($this.parents('li').data('id') || url2obj(location.search).id);
+    var url = 'unlock-success.html?title='+ (url2obj(location.search).hosCode || $this.parents('li').data('hosCode')) +'&hId=' + ($this.parents('li').data('hId') || url2obj(location.search).hId) + '&bId=' +($this.parents('li').data('bId') ||  url2obj(location.search).bId) + '&aId=' +($this.parents('li').data('aId') ||  url2obj(location.search).aId) + '&time=' + url2obj(location.search).time + '&hosCode=' + (url2obj(location.search).hosCode || $this.parents('li').data('hosCode')) + '&id=' + ($this.parents('li').data('id') || url2obj(location.search).id) + '&type=' + url2obj(location.search).type;
+      // console.log(url2obj(location.search).type);  
     location.href = url;
 }
 //切换市场规模指标
@@ -363,11 +369,20 @@ function tabTime2(time) {
     location.href = openUrl;
 }
 
-function selectAll() {
+function selectAll(obj) {
     +($('.label-checkbox').children('input:first-child')).each(function() {
         if (!$(this).prop('checked')) $(this).prop('checked', 'checked');
     });
+    $(obj).addClass('disabled').siblings('.pull-left').removeClass('disabled');
     totalSelect($('.label-checkbox').children('input:first-child').length)
+}
+function diselectAll(obj){
+    +($('.label-checkbox').children('input:first-child')).each(function() {
+        if ($(this).prop('checked')) $(this).prop('checked', false);
+    });
+    $(obj).addClass('disabled').siblings('.pull-left').removeClass('disabled');
+    totalSelect(0);
+
 }
 $(document).on('change', '#deleteUserBreedInfo input,#getUserBreedHospitalInfo input', function() {
     totalSelect($(this).parents('ul').find('input:checked').length);

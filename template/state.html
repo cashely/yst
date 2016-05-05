@@ -45,7 +45,7 @@
     </div>
     <!-- <script src="dist/js/jquery.min.js"></script> -->
     <script type="text/javascript" src="../src/js/jweixin-1.0.0.js"></script>
-    <script src="http://www.light7.cn/assets/js/zepto.js"></script>
+    <script src="http://light7.org/assets/js/zepto.js"></script>
     <script src="../lib/light7/js/light7.js"></script>
     <script type="text/javascript" src="../lib/light7/js/light7-city-picker.min.js" charset="utf-8"></script>
     <script type="text/javascript" src="../src/js/common.js"></script>
@@ -59,7 +59,7 @@
         $('.content').removeClass('has-secondary-header');
       }
      $.attachInfiniteScroll('.infinite-scroll');
-     $('#addHospital').prop('href', 'add-hospital.html?bId=' + url2obj(location.search).bId+'&aId='+url2obj(location.search).aId +'&orderId='+url2obj(location.search).id +'&title=' + url2obj(location.search).title +' ' +url2obj(location.search).iconType);
+     $('#addHospital').prop('href', 'add-hospital.html?bId=' + url2obj(location.search).bId+'&aId='+url2obj(location.search).aId +'&orderId='+url2obj(location.search).id +'&title=' + url2obj(location.search).title);
      $('#editHospital').prop('href','edit-hospital.html'+location.search);
      $(document).on('infinite', '.infinite-scroll',function() {
         if (loading) return;
@@ -69,9 +69,10 @@
           renderDom(data);
           if($('#getUserBreedHospitalInfo li').length >= totalNum){
             $.detachInfiniteScroll($('.infinite-scroll'));
-            $('.infinite-scroll-preloader').remove();
+            $('.infinite-scroll-preloader').hide();
           }
-        });
+        },{sidx: 'lockStatus',
+          sord: 'desc'});
      });
      $('.infinite-scroll').trigger('infinite');
      //读取医院数量

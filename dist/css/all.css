@@ -503,6 +503,7 @@ body {
   .table-row-header .col-child-2 {
     text-align: center;
     line-height: 1;
+    float: none;
     padding-top: .5rem; }
 
 .table-row [class^='col-'], .table-row .yxyy {
@@ -733,3 +734,10 @@ body {
   width: 38%; }
   .yxyy-38.no-add {
     width: 46%; }
+
+.bar-nav .button {
+  top: .25rem; }
+
+.button {
+  height: 1.55rem;
+  line-height: 1.55rem; }

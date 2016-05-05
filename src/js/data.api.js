@@ -1,8 +1,8 @@
 // 首页整体数据
 function data() {
-    var id = url2obj(location.search).areaId || 2; //城市id
-    var date = url2obj(location.search).time || '2015-10'; //时间
-    var privice = url2obj(location.search).pName || '加载中'; //城市
+    var id = url2obj(location.search).areaId || sessionStorage.getItem('areaId') || 2; //城市id
+    var date = url2obj(location.search).time || sessionStorage.getItem('time') || '2015-12'; //时间
+    var privice = url2obj(location.search).pName || sessionStorage.getItem('areaName') || '加载中'; //城市
     var pN = 1;
     var pS = 15;
     var actionApi = url2obj(location.search).AP || '';
@@ -11,8 +11,9 @@ function data() {
     var init = function() {
         if (document.getElementById('privice')) document.getElementById('privice').value = privice;
         // document.getElementsByTagName('title')[0].innerText = url2obj(location.search).name;
-        if (url2obj(location.search).title) {
+        if (url2obj(location.search).title && document.title) {
             document.getElementsByTagName('title')[0].innerText = decode(url2obj(location.search).title);
+            // alert(decode(url2obj(location.search).title));
         }
         if (document.getElementById('my-input')) document.getElementById('my-input').value = time2date(date);
     }
@@ -215,7 +216,6 @@ function data() {
                 $('#businessSales').append(str);
                 str = '';
                 $.each(res.businessConcept, function(index) {
-                    // console.log(this,index);
                     str += '<li class="col-33 item-pean"><a href="optional.html?id=' + this.id + '&areaId=' + this.areaId + '&pName=' + privice + '&sId=' + this.conceptId + '&time=' + date + '&AP=getConceptBreedInfo&title=' + this.conceptName + '" class="item-link external">';
                     if (index === 0) {
                         str += '<span class="top"><i class="fa fa-trophy"></i></span>';
@@ -246,7 +246,7 @@ function data() {
                     str += '</div>';
                     str += '<div class="col-4-scgm">' + this.sales + '万</div>';
                     str += '<div class="col-4-zdf ' + (this.changeCost >= 0 ? 'z' : 'd') + '">' + this.changeCost + '</div>';
-                    str += '<div class="col-4-zdf ' + (this.change >= 0 ? 'z' : 'd') + '">' + this.change + '</div>';
+                    str += '<div class="col-4-zdf ' + (this.change >= 0 ? 'z' : 'd') + '">' + this.change + '%</div>';
                     str += '<div class="add ' + (this.isOpt !== 0 ? 'hidden' : '') + '" onClick="addAction(this)"><i class="fa fa-plus-circle fa-lg"></i></div>';
                     str += '<div class="add ' + (this.isOpt === 0 ? 'hidden' : '') + '"><i class="fa fa-check-circle fa-lg"></i></div>';
                     str += '</div></li>';
@@ -258,11 +258,13 @@ function data() {
                     str += '<div class="col-5-tym">' + this.genericName + '<i class="bradge">' + translateIcoType(this.icoType) + '</i></div>';
                     str += '<div class="col-4-scgm">' + this.sales + '万</div>';
                     str += '<div class="col-4-zdf ' + (this.changeCost >= 0 ? 'z' : 'd') + '">' + this.changeCost + '</div>';
-                    str += '<div class="col-4-zdf ' + (this.change >= 0 ? 'z' : 'd') + '">' + this.change + '</div>';
+                    str += '<div class="col-4-zdf ' + (this.change >= 0 ? 'z' : 'd') + '">' + this.change + '%</div>';
                     str += '<div class="add ' + (this.isOpt !== 0 ? 'hidden' : '') + '" onClick="addAction(this)"><i class="fa fa-plus-circle fa-lg"></i></div>';
-                    str += '<div class="add ' + (this.isOpt === 0 ? 'hidden' : '') + '"><i class="fa fa-check-circle fa-lg"></i></div>';
+                    str += '<a class="add ' + (this.isOpt === 0 ? 'hidden' : '') + '"><i class="fa fa-check-circle fa-lg"></i></a>';
                     str += '</div></li>';
                 })
+
+
                 $('#businessBreedDown').append(str);
                 $('.scroll-title').overFlowText();
             });
@@ -275,8 +277,8 @@ function data() {
                 salesId: url2obj(location.search).sId,
                 conceptId: url2obj(location.search).sId,
                 pageNo: pN,
-                sidx: obj.sidx,
-                sord: obj.sord,
+                sidx: obj.sidx || '',
+                sord: obj.sord || '',
                 pageSize: pS
             }, function(res, total) {
                 callback(res, total);
@@ -290,8 +292,8 @@ function data() {
             requestData('business/' + actionApi, {
                 yearMonth: date,
                 areaId: id,
-                sidx: obj.sidx,
-                sord: obj.sord,
+                sidx: obj.sidx || '',
+                sord: obj.sord || '',
                 pageNo: pN,
                 pageSize: pS
             }, function(res, total) {
@@ -300,19 +302,21 @@ function data() {
             });
         },
         //查看产品自选
-        getOrderBreedInfo: function(cb) {
+        getOrderBreedInfo: function(cb,obj) {
             var callback = cb || function() {};
             requestData('business/getOrderBreedInfo', {
                 yearMonth: date,
                 pageNo: pN,
-                pageSize: pS
+                pageSize: pS,
+                sidx: obj.sidx || '',
+                sord: obj.sord || ''
             }, function(res, total) {
                 pN++;
                 callback(res, total, date);
             })
         },
         // 查看自选产品样例数据
-        getDefaultOrderBreedInfo: function(cb) {
+        getDefaultOrderBreedInfo: function(cb,obj) {
             var callback = cb || function() {};
             requestData('business/getDefaultOrderBreedInfo', {
                 yearMonth: date,
@@ -324,12 +328,14 @@ function data() {
             })
         },
         // 删除自选产品
-        editUserBreedInfo: function(cb) {
+        editUserBreedInfo: function(cb,obj) {
             var callback = cb || function() {};
             requestData('business/getOrderBreedInfo', {
                 yearMonth: date,
                 pageNo: pN,
-                pageSize: pS
+                pageSize: pS,
+                sidx: obj.sidx || '',
+                sord: obj.sord || ''
             }, function(res, total) {
                 var str = '';
                 console.log(res);
@@ -368,7 +374,7 @@ function data() {
             })
         },
         //查看自选医院列表
-        getUserBreedHospitalInfo: function(cb) {
+        getUserBreedHospitalInfo: function(cb,obj) {
             var callback = cb || function() {};
             requestData('business/getUserBreedHospitalInfo', {
                 id: url2obj(location.search).id,
@@ -376,18 +382,22 @@ function data() {
                 areaId: url2obj(location.search).aId,
                 type: url2obj(location.search).type,
                 pageNo: pN,
-                pageSize: pS
+                pageSize: pS,
+                sidx: obj.sidx || '',
+                sord: obj.sord || ''
             }, function(res, total) {
                 pN++;
                 callback(res, total);
             })
         },
         //自选医院列表
-        getUserHostInfo: function(cb) {
+        getUserHostInfo: function(cb,obj) {
             var callback = cb || function() {};
             requestData('business/getUserHostInfo', {
                 pageNo: pN,
-                pageSize: pS
+                pageSize: pS,
+                sidx: obj.sidx || '',
+                sord: obj.sord || ''
             }, function(res, total) {
                 pN++;
                 callback(res, total);
@@ -482,8 +492,8 @@ function data() {
                 breedId: url2obj(location.search).bId,
                 areaId: url2obj(location.search).aId,
                 yearMonth: url2obj(location.search).time,
-                sidx: obj.sidx,
-                sord: obj.sord,
+                sidx: obj.sidx || '',
+                sord: obj.sord || '',
                 pageNo: pN,
                 pageSize: pS
             }, function(res, total) {
