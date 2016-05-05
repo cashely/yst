@@ -15,7 +15,7 @@ function data() {
             document.getElementsByTagName('title')[0].innerText = decode(url2obj(location.search).title);
             // alert(decode(url2obj(location.search).title));
         }
-        if (document.getElementById('my-input')) document.getElementById('my-input').value = time2date(date);
+        if ($('.date-input')) $('.date-input').val(time2date(date));
     }
     init();
 

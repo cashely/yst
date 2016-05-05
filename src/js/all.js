@@ -90,6 +90,39 @@ $.fn.overFlowText = function() {
     modal.modalPreloaderTitle = "正在加载...";
 }($);
 
+// 重构日历切换方法
+$(document).on('click','.date-input-left',function(){
+    toggleDate(-1);
+});
+$(document).on('click','.date-input-right',function(){
+    toggleDate(1);
+});
+
+function toggleDate(m){
+    var nowDate = $('.date-input').val();
+    console.log('切换前时间：',nowDate);
+    var dateArray = nowDate.split('-');
+    if(m > 0){
+        if(dateArray[1]<12){
+            ++dateArray[1];
+        }else{
+            ++dateArray[0];
+            dateArray[1] = 1;
+        }
+    }else{
+        if(dateArray[1] >1 ){
+            --dateArray[1];
+        }else{
+            --dateArray[0];
+            dateArray[1] = 12;
+        }
+    }
+    dateArray = dateArray.join('-');
+    console.log('切换后时间：',dateArray);
+    $('.date-input').val(dateArray);
+    tabTime2(dateArray);
+}
+
 function hideSblings(e) {
     $(e).children('a').toggleClass('hidden');
     $('.yxyy').siblings('.yxyy').toggleClass('hidden');
@@ -272,7 +305,7 @@ function time2date(t) {
     var str = t.split('-');
     var month = str[1];
     str[1] = (str[1].indexOf('0') === 0) ? str[1].slice(1) : str[1];
-    return str[1] + '月 ' + str[0] + '年';
+    return str[0] + '-' + str[1];
 }
 //12月 2012年 => 2012-12
 function date2time(d) {
