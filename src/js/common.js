@@ -91,6 +91,30 @@ function translateIcoType(num) {
         case 314:
             icoType = '不详';
             break;
+        case 401:
+            icoType = '基';
+            break;
+        case 402:
+            icoType = '医';
+            break;
+        case 403:
+            icoType = '低';
+            break;
     }
     return icoType;
+}
+
+//过滤后台数据
+function filterDateText(text,unit){
+    var _t = text;
+    
+    var _u = unit;
+    if(_t === 0) return (_u ? (_t + _u) : _t);
+
+    if(_t == "" || !_t || _t == null || _t == ''){
+        return '&nbsp;';
+        
+    }else{
+        return (_u ? (_t + _u) : _t);
+    }
 }

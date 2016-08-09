@@ -10,6 +10,7 @@
                     编辑
                 </title>
                 <link href="../lib/light7/css/light7.min.css" rel="stylesheet"/>
+                <link href="../lib/light7/css/light7-extend.min.css" rel="stylesheet" />
                 <link href="../lib/fontAw/css/font-awesome.min.css" rel="stylesheet"/>
                 <link href="../dist/css/all.css" rel="stylesheet"/>
             </meta>
@@ -20,7 +21,7 @@
             <!-- 二级菜单 start -->
             <div class="bar bar-nav select-header-secondary">
                 <div class="row no-gutter table-row-header select-header no-edit">
-                    <div class="col-4-ds">
+                    <div class="col-4-ds" style="text-align:left">
                         地市
                     </div>
                     <div class="col-4-tym">
@@ -55,9 +56,9 @@
                 <button class="button button-link disabled pull-left" onclick="diselectAll(this)">
                     全不选
                 </button>
-                <a class="button button-success active pull-right external" href="select.html" id="closeEdit">
+                <!-- <a class="button button-success active pull-right external" href="select.html" id="closeEdit">
                     完成
-                </a>
+                </a> -->
                 <button class="button button-danger pull-right" onclick="actionDelete()">
                     删除(<span id="totalSelect">0</span>)
                 </button>
@@ -67,11 +68,12 @@
         <!-- <script src="dist/js/jquery.min.js"></script> -->
         <script src="../src/js/jweixin-1.0.0.js" type="text/javascript">
         </script>
-        <script src="http://light7.org/assets/js/zepto.js"></script>
+        <script src="../src/js/zepto.js"></script>
         <script src="../lib/light7/js/light7.js">
         </script>
         <script charset="utf-8" src="../lib/light7/js/light7-city-picker.min.js" type="text/javascript">
         </script>
+        <script type="text/javascript" src="../lib/light7/js/light7-extend.min.js"></script>
         <script src="../src/js/data.api.js" type="text/javascript">
         </script>
         <script src="../src/js/all.js">
@@ -115,7 +117,10 @@
                               $.detachInfiniteScroll($('.infinite-scroll'));
                               $('.infinite-scroll-preloader').hide();
                             }
-                          });
+                          },{
+                              sidx: 'userLockCount',
+                              sord: 'desc'
+                            });
                          $(document).on('infinite', '.infinite-scroll',function() {
                             if (loading) return;
                             loading = true;
@@ -128,12 +133,24 @@
                               }else{
                                 pn ++;
                               }
+                            },{
+                              sidx: 'userLockCount',
+                              sord: 'desc'
                             });
                          });
-                      },2000)
+                      },0)
                   })
               },function(){})
              }
+        </script>
+        <script>
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "//hm.baidu.com/hm.js?a7277cbc790008ad84ec010f0d2df209";
+          var s = document.getElementsByTagName("script")[0]; 
+          s.parentNode.insertBefore(hm, s);
+        })();
         </script>
     </body>
 </html>

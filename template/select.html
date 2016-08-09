@@ -8,6 +8,7 @@
     <meta http-equiv="pragma" content="no-cache">
     <title>自选</title>
     <link href="../lib/light7/css/light7.min.css" rel="stylesheet" />
+    <link href="../lib/light7/css/light7-extend.min.css" rel="stylesheet" />
     <link href="../lib/fontAw/css/font-awesome.min.css" rel="stylesheet" />
     <link href="../dist/css/all.css" rel="stylesheet" />
   </head>
@@ -16,18 +17,19 @@
       <!-- 头部筛选 start -->
       <header class="bar bar-nav select-header">
         <div class="row no-gutter" style="margin-right:-.5rem">
-          <div class="col-60">
+          <div class="col-50">
             <div class="buttons-row">
               <a href="add.html" id="add" class="external button">添加</a></a>
               <a href="edit.html" id="edit" class="external button">编辑</a>
               <a href="list.html" id="list" class="external button">医院</a>
             </div>
           </div>
-          <div class="col-40">
+          <div class="col-50">
             <div class="calendar-header">
-              <i class="fa fa-calendar"></i>
-              <input type="button" class="date-input" id="my-input"/>
-            </div>
+            <i class="fa fa-caret-left fa-2x color-primary date-input-left"></i>
+            <input type="button" class="date-input" id="my-input" value="2015-12"/>
+            <i class="fa fa-caret-right fa-2x color-primary date-input-right"></i>
+          </div>
           </div>
         </div>
       </header>
@@ -40,8 +42,8 @@
           <div class="col-4-scgm sort" data-sortName="sales">市场规模</div>
           <div class="col-4-zdf sort" data-sortName="change">涨跌幅</div>
           <div class="yxyy" onClick="hideSblings(this)">
-            <a href="#">已选医院</a>
-            <a href="#" class="hidden">解锁医院</a>
+            <span class="tips-arrow">已选医院</span>
+            <span class="tips-arrow hidden">解锁医院</span>
           </div>
         </div>
       </div>
@@ -69,20 +71,20 @@
           <span class="icon icon-cart"></span>
           <span class="tab-label">自选</span>
         </a>
-        <a class="tab-item external" href="#">
+        <div class="tab-item tab-product">
           <span class="icon icon-app"></span>
           <span class="tab-label">产品</span>
-        </a>
+        </div>
         <a class="tab-item external" href="index.html">
           <div class="index-obj">
             <span class="icon icon-browser"></span>
             <span class="tab-label">行情</span>
           </div>
         </a>
-        <a class="tab-item external" href="#">
+        <div class="tab-item tab-hospital">
           <span class="icon icon-card"></span>
           <span class="tab-label">医院</span>
-        </a>
+        </div>
         <a class="tab-item external" href="user.html">
           <span class="icon icon-friends"></span>
           <span class="tab-label">个人中心</span>
@@ -93,12 +95,13 @@
     <!-- <script src="dist/js/jquery.min.js"></script> -->
     <script src="../src/js/jweixin-1.0.0.js" type="text/javascript">
     </script>
-    <script src="http://light7.org/assets/js/zepto.js"></script>
+    <script src="../src/js/zepto.js"></script>
     <script type="text/javascript" src="../src/js/common.js"></script>
     <script src="../lib/light7/js/light7.js">
     </script>
     <script charset="utf-8" src="../lib/light7/js/light7-city-picker.min.js" type="text/javascript">
     </script>
+    <script type="text/javascript" src="../lib/light7/js/light7-extend.min.js"></script>
     <script src="../src/js/data.api.js" type="text/javascript">
     </script>
     <script src="../src/js/all.js">
@@ -117,7 +120,7 @@
             sord:$('.table-row-header').data('sord')
         });
      });
-     $('.infinite-scroll').trigger('infinite');
+     // $('.infinite-scroll').trigger('infinite');
 
      $(document).on('click','.sort',function(event){
         $.attachInfiniteScroll('.infinite-scroll');
@@ -126,32 +129,18 @@
         $('.infinite-scroll').trigger('infinite');
       });
 
-     //读取医院数量
-     dataApi.getUserLockInfo(function(d){
-      $('#allHospital').text(d.lockCount);
-      $('#readyHospital').text(d.userLockCount);
-     });
-
-     //读取样例数据
-     dataApi.getDefaultOrderBreedInfo(function(data,total,date){
-        renderDefaultDom(data,total,date);
-      });
-
      function renderDom(data,total,date){
       var str = '';
+      $('.yxyy .tips-arrow').eq(0).removeClass('hidden').next().addClass('hidden');
       $.each(data, function() {
-        str += '<li class="item-content  no-edit"><a class="item-inner item-link external" href="state.html?id='+this.id+'&bId='+this.breedId+'&aId='+this.areaId+'&type=1&title='+this.areaName+' '+this.genericName+ ' ' + translateIcoType(this.icoType) +'&time='+date+'&iconType='+ translateIcoType(this.icoType)+'">';
+        str += '<li class="item-content  no-edit"><a class="item-inner item-link external" href="state.html?id='+this.id+'&bId='+this.breedId+'&aId='+this.areaId+'&type=1&title='+this.areaName+' '+(this.genericNameShort || this.genericName)+ ' ' + translateIcoType(this.icoType) +'&time='+date+'&iconType='+ translateIcoType(this.icoType)+'">';
         str += '<div class="col-4-ds text-left"><span>' + this.areaName + '</span></div>';
-        str += '<div class="col-5-tym no-add">' + this.genericName + '<i class="bradge">' + translateIcoType(this.icoType) + '</i></div>';
-        str += '<div class="col-4-scgm">' + this.sales + '万</div>';
-        if(this.change){
-            if (this.change >= 0) {
-                str += '<div class="col-4-zdf z">' + this.change + '%</div>';
-            } else {
-                str += '<div class="col-4-zdf d"> ' + this.change + '%</div>';
-            }
-        }else{
-            str += '<div class="col-4-zdf"> ' + this.change + '</div>';
+        str += '<div class="col-5-tym no-add">' + (this.genericNameShort || this.genericName) + '<i class="bradge">' + translateIcoType(this.icoType) + '</i></div>';
+        str += '<div class="col-4-scgm">' + filterDateText(this.sales,'万') + '</div>';
+        if (this.change >= 0) {
+            str += '<div class="col-4-zdf z">' + filterDateText(this.change,'%') + '</div>';
+        } else {
+            str += '<div class="col-4-zdf d"> ' + filterDateText(this.change,'%') + '</div>';
         }
         str += '<div class="yxyy">' + this.lockCount + '/' + this.hosCount + '</div>';
         str += '<div class="yxyy hidden">' + this.userLockCount + '/' + this.lockCount + '</div>';
@@ -177,11 +166,11 @@
         ysStr += '<li class="item-content no-edit yl"><a class="item-inner item-link external" href="state.html?id='+this.id+'&bId='+this.breedId+'&aId='+this.areaId+'&type=0&title='+this.areaName+' '+this.genericName + ' ' + translateIcoType(this.icoType) +'&time='+date+'&type='+ this.type+'">';
         ysStr += '<div class="col-4-ds text-left"><span>' + this.areaName + '</span></div>';
         ysStr += '<div class="col-5-tym no-add">' + this.genericName + '<i class="bradge">' + translateIcoType(this.icoType) + '</i></div>';
-        ysStr += '<div class="col-4-scgm">' + this.sales + '万</div>';
+        ysStr += '<div class="col-4-scgm">' + filterDateText(this.sales,'万') + '</div>';
         if (this.change >= 0) {
-            ysStr += '<div class="col-4-zdf z">' + this.change + '%</div>';
+            ysStr += '<div class="col-4-zdf z">' + filterDateText(this.change,'%') + '</div>';
         } else {
-            ysStr += '<div class="col-4-zdf d">' + this.change + '%</div>';
+            ysStr += '<div class="col-4-zdf d">' + filterDateText(this.change,'%') + '</div>';
         }
         ysStr += '<div class="yxyy text-center">' + this.lockCount + '/' + this.hosCount + '</div>';
         ysStr += '<div class="yxyy hidden">' + this.userLockCount + '/' + this.lockCount + '</div>';
@@ -189,6 +178,41 @@
       });
       $(ysStr).appendTo($('#getOrderBreedInfoYl'));
      }
+     //初始化异步日历方法
+    calenderFn(function(){
+        dataApi.reSet();
+        $.attachInfiniteScroll('.infinite-scroll');
+        $('#getOrderBreedInfo li').remove();
+        $('.infinite-scroll').trigger('infinite');
+        dataApi.getDefaultOrderBreedInfo(function(data,total,date){
+          $('#getOrderBreedInfoYl li').remove();
+          renderDefaultDom(data,total,date);
+        });
+    });
+
+    initData(function(){
+      //读取医院数量
+     dataApi.getUserLockInfo(function(d){
+      $('#allHospital').text(d.lockCount);
+      $('#readyHospital').text(d.userLockCount);
+     });
+
+     //读取样例数据
+     dataApi.getDefaultOrderBreedInfo(function(data,total,date){
+        $('#getOrderBreedInfoYl li').remove();
+        renderDefaultDom(data,total,date);
+      });
+     $('.infinite-scroll').trigger('infinite');
+    });
+    </script>
+    <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?a7277cbc790008ad84ec010f0d2df209";
+      var s = document.getElementsByTagName("script")[0]; 
+      s.parentNode.insertBefore(hm, s);
+    })();
     </script>
   </body>
 </html>

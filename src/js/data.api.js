@@ -1,24 +1,12 @@
 // 首页整体数据
 function data() {
-    var id = url2obj(location.search).areaId || sessionStorage.getItem('areaId') || 2; //城市id
-    var date = url2obj(location.search).time || sessionStorage.getItem('time') || '2015-12'; //时间
-    var privice = url2obj(location.search).pName || sessionStorage.getItem('areaName') || '加载中'; //城市
+    var id = sessionStorage.getItem('areaId') || 2; //城市id
+    var date = sessionStorage.getItem('time') || '2015-10'; //时间
+    var privice = sessionStorage.getItem('areaName') || '加载中'; //城市
     var pN = 1;
-    var pS = 15;
+    var pS = 20;
     var actionApi = url2obj(location.search).AP || '';
     var wechatCode = url2obj(location.search).code;
-
-    var init = function() {
-        if (document.getElementById('privice')) document.getElementById('privice').value = privice;
-        // document.getElementsByTagName('title')[0].innerText = url2obj(location.search).name;
-        if (url2obj(location.search).title && document.title) {
-            document.getElementsByTagName('title')[0].innerText = decode(url2obj(location.search).title);
-            // alert(decode(url2obj(location.search).title));
-        }
-        if ($('.date-input')) $('.date-input').val(time2date(date));
-    }
-    init();
-
     function translateIcoType(num) {
         var icoType = '';
         switch (num) {
@@ -116,6 +104,16 @@ function data() {
         return icoType;
     }
     return {
+        setInit: function(){
+            if (document.getElementById('privice')) document.getElementById('privice').value = sessionStorage.getItem('areaName');
+            console.log(privice,'init省份');
+            // document.getElementsByTagName('title')[0].innerText = url2obj(location.search).name;
+            if (url2obj(location.search).title && document.title) {
+                document.getElementsByTagName('title')[0].innerText = decode(url2obj(location.search).title);
+                // alert(decode(url2obj(location.search).title));
+            }
+            if ($('.date-input')) $('.date-input').val(time2date(date));
+        },
         getInitWxUser: function() {
             requestData('business/getInitWxUser', {
                 code: wechatCode
@@ -129,16 +127,14 @@ function data() {
             pN = 1;
         },
         changePrivice: function(n, pn) {
-            id = url2obj(location.search).areaId || n;
-            privice = url2obj(location.search).pName || pn;
+            id = sessionStorage.getItem('areaId') || n;
+            privice = sessionStorage.getItem('areaName') || pn;
         },
         goState: function() {},
         getIndexData: function() {
-
-            init();
             requestData('business/getMarketInfo', {
-                yearMonth: date,
-                areaId: id
+                yearMonth: sessionStorage.getItem('time'),
+                areaId: sessionStorage.getItem('areaId')
             }, function(res) {
                 // 异步传递code
                 if(res.businessCwm.length == 0){
@@ -175,26 +171,26 @@ function data() {
                     str += '<p>' + this.sales + '万</p>';
                     str += '<div class="item-pean-footer">';
                     if (this.changeCost >= 0) {
-                        str += '<span class="up">' + this.changeCost + '</span>';
+                        str += '<span class="up">' + filterDateText(this.changeCost) + '</span>';
                     } else {
-                        str += '<span class="down">' + this.changeCost + '</span>';
+                        str += '<span class="down">' + filterDateText(this.changeCost) + '</span>';
                     }
                     if (this.change >= 0) {
-                        str += '<span class="up">' + this.change + '% </span>';
+                        str += '<span class="up">' + filterDateText(this.change,'%') + '</span>';
                     } else {
-                        str += '<span class="down">' + this.change + '% </span>';
+                        str += '<span class="down">' + filterDateText(this.change,'%') + '</span>';
                     }
                     str += '</div></li>';
                 });
                 $('#businessCwmLink').prop('href', 'rise.html?time=' + date + '&areaId=' + id + '&pName=' + encode(privice) + '&AP=getBusinessSalesInfo&title=' + encode('分类涨幅榜'));
                 $('#businessSalesLink').prop('href', 'rise.html?time=' + date + '&areaId=' + id + '&pName=' + encode(privice) + '&AP=getBusinessConceptInfo&title=' + encode('概念涨幅榜'));
-                $('#businessBreedByUpInfo').prop('href', 'optional.html?time=' + date + '&areaId=' + id + '&pName=' + encode(privice) + '&AP=getBusinessBreedByUpInfo&title=' + encode('品种涨幅榜'));
-                $('#businessBreedByDownInfo').prop('href', 'optional.html?time=' + date + '&areaId=' + id + '&pName=' + encode(privice) + '&AP=getBusinessBreedByDownInfo&title=' + encode('品种跌幅榜'));
-                $('#businessCwm').append(str);
+                $('#businessBreedByUpInfo').prop('href', 'optional.html?time=' + date + '&areaId=' + id + '&pName=' + encode(privice) + '&AP=getBusinessBreedByUpInfo&title=' + encode('品种影响力排行榜'));
+                // $('#businessBreedByDownInfo').prop('href', 'optional.html?time=' + date + '&areaId=' + id + '&pName=' + encode(privice) + '&AP=getBusinessBreedByDownInfo&title=' + encode('品种跌幅榜'));
+                $('#businessCwm').html(str);
                 str = '';
                 $.each(res.businessSales, function(index) {
                     // console.log(this,index);
-                    str += '<li class="col-33 item-pean"><a href="optional.html?id=' + this.id + '&areaId=' + this.areaId + '&pName=' + privice + '&sId=' + this.salesId + '&time=' + date + '&AP=getSalesBreedInfo&title=' + this.salesName + '" class="item-link external">';
+                    str += '<li class="col-33 item-pean"><a href="optional.html?id=' + this.id + '&areaId=' + this.areaId + '&pName=' + privice + '&sId=' + this.salesId + '&time=' + date + '&AP=getSalesBreedInfo&title=' + '('+translateIcoType(this.icoType)+')' + this.salesName + '" class="item-link external">';
                     if (index === 0) {
                         str += '<span class="top"><i class="fa fa-trophy"></i></span>';
                     }
@@ -202,18 +198,18 @@ function data() {
                     str += '<p>' + this.sales + '万</p>';
                     str += '<div class="item-pean-footer">';
                     if (this.changeCost >= 0) {
-                        str += '<span class="up">' + this.changeCost + '</span>';
+                        str += '<span class="up">' + filterDateText(this.changeCost) + '</span>';
                     } else {
-                        str += '<span class="down">' + this.changeCost + '</span>';
+                        str += '<span class="down">' + filterDateText(this.changeCost) + '</span>';
                     }
                     if (this.change >= 0) {
-                        str += '<span class="up">' + this.change + '% </span>';
+                        str += '<span class="up">' + filterDateText(this.change,'%') + '</span>';
                     } else {
-                        str += '<span class="down">' + this.change + '% </span>';
+                        str += '<span class="down">' + filterDateText(this.change,'%') + '</span>';
                     }
                     str += '</div></a></li>';
                 });
-                $('#businessSales').append(str);
+                $('#businessSales').html(str);
                 str = '';
                 $.each(res.businessConcept, function(index) {
                     str += '<li class="col-33 item-pean"><a href="optional.html?id=' + this.id + '&areaId=' + this.areaId + '&pName=' + privice + '&sId=' + this.conceptId + '&time=' + date + '&AP=getConceptBreedInfo&title=' + this.conceptName + '" class="item-link external">';
@@ -224,56 +220,56 @@ function data() {
                     str += '<p>' + this.sales + '万</p>';
                     str += '<div class="item-pean-footer">';
                     if (this.changeCost >= 0) {
-                        str += '<span class="up">' + this.changeCost + '</span>';
+                        str += '<span class="up">' + filterDateText(this.changeCost) + '</span>';
                     } else {
-                        str += '<span class="down">' + this.changeCost + '</span>';
+                        str += '<span class="down">' + filterDateText(this.changeCost) + '</span>';
                     }
                     if (this.change >= 0) {
-                        str += '<span class="up">' + this.change + '% </span>';
+                        str += '<span class="up">' + filterDateText(this.change,'%') + '</span>';
                     } else {
-                        str += '<span class="down">' + this.change + '% </span>';
+                        str += '<span class="down">' + filterDateText(this.change,'%') + '</span>';
                     }
                     str += '</div></a></li>';
                 })
-                $('#businessConcept').append(str);
+                $('#businessConcept').html(str);
                 str = '';
                 $.each(res.businessBreedUp, function() {
                     str += '<li class="item-content" data-id="' + this.id + '" data-aid = "' + this.areaId + '"><div class="item-inner">';
-                    str += '<div class="col-5-tym">' + this.genericName;
+                    str += '<div class="col-5-tym">' + (this.genericNameShort || this.genericName);
                     if (this.icoType) {
                         str += '<i class="bradge">' + translateIcoType(this.icoType) + '</i>';
                     };
                     str += '</div>';
-                    str += '<div class="col-4-scgm">' + this.sales + '万</div>';
-                    str += '<div class="col-4-zdf ' + (this.changeCost >= 0 ? 'z' : 'd') + '">' + this.changeCost + '</div>';
-                    str += '<div class="col-4-zdf ' + (this.change >= 0 ? 'z' : 'd') + '">' + this.change + '%</div>';
+                    str += '<div class="col-4-scgm">' + filterDateText(this.sales,'万') + '</div>';
+                    str += '<div class="col-4-zdf ' + (this.changeCost >= 0 ? 'z' : 'd') + '">' + filterDateText(this.changeCost) + '</div>';
+                    str += '<div class="col-4-zdf ' + (this.change >= 0 ? 'z' : 'd') + '">' + filterDateText(this.change,'%') + '</div>';
                     str += '<div class="add ' + (this.isOpt !== 0 ? 'hidden' : '') + '" onClick="addAction(this)"><i class="fa fa-plus-circle fa-lg"></i></div>';
                     str += '<div class="add ' + (this.isOpt === 0 ? 'hidden' : '') + '"><i class="fa fa-check-circle fa-lg"></i></div>';
                     str += '</div></li>';
                 })
-                $('#businessBreedUp').append(str);
-                str = '';
-                $.each(res.businessBreedDown, function() {
-                    str += '<li class="item-content" data-id="' + this.id + '" data-aid = "' + this.areaId + '"><div class="item-inner">';
-                    str += '<div class="col-5-tym">' + this.genericName + '<i class="bradge">' + translateIcoType(this.icoType) + '</i></div>';
-                    str += '<div class="col-4-scgm">' + this.sales + '万</div>';
-                    str += '<div class="col-4-zdf ' + (this.changeCost >= 0 ? 'z' : 'd') + '">' + this.changeCost + '</div>';
-                    str += '<div class="col-4-zdf ' + (this.change >= 0 ? 'z' : 'd') + '">' + this.change + '%</div>';
-                    str += '<div class="add ' + (this.isOpt !== 0 ? 'hidden' : '') + '" onClick="addAction(this)"><i class="fa fa-plus-circle fa-lg"></i></div>';
-                    str += '<a class="add ' + (this.isOpt === 0 ? 'hidden' : '') + '"><i class="fa fa-check-circle fa-lg"></i></a>';
-                    str += '</div></li>';
-                })
+                $('#businessBreedUp').html(str);
+                // str = '';
+                // $.each(res.businessBreedDown, function() {
+                //     str += '<li class="item-content" data-id="' + this.id + '" data-aid = "' + this.areaId + '"><div class="item-inner">';
+                //     str += '<div class="col-5-tym">' + this.genericName + '<i class="bradge">' + translateIcoType(this.icoType) + '</i></div>';
+                //     str += '<div class="col-4-scgm">' + this.sales + '万</div>';
+                //     str += '<div class="col-4-zdf ' + (this.changeCost >= 0 ? 'z' : 'd') + '">' + this.changeCost + '</div>';
+                //     str += '<div class="col-4-zdf ' + (this.change >= 0 ? 'z' : 'd') + '">' + this.change + '%</div>';
+                //     str += '<div class="add ' + (this.isOpt !== 0 ? 'hidden' : '') + '" onClick="addAction(this)"><i class="fa fa-plus-circle fa-lg"></i></div>';
+                //     str += '<a class="add ' + (this.isOpt === 0 ? 'hidden' : '') + '"><i class="fa fa-check-circle fa-lg"></i></a>';
+                //     str += '</div></li>';
+                // })
 
 
-                $('#businessBreedDown').append(str);
+                // $('#businessBreedDown').append(str);
                 $('.scroll-title').overFlowText();
             });
         },
         getOptionalData: function(cb, obj) {
             var callback = cb || function() {};
             requestData('business/' + actionApi, {
-                yearMonth: date,
-                areaId: id,
+                yearMonth: sessionStorage.getItem('time'),
+                areaId: sessionStorage.getItem('areaId'),
                 salesId: url2obj(location.search).sId,
                 conceptId: url2obj(location.search).sId,
                 pageNo: pN,
@@ -290,8 +286,8 @@ function data() {
         getRiseData: function(cb, obj) {
             var callback = cb || function() {};
             requestData('business/' + actionApi, {
-                yearMonth: date,
-                areaId: id,
+                yearMonth: sessionStorage.getItem('time'),
+                areaId: sessionStorage.getItem('areaId'),
                 sidx: obj.sidx || '',
                 sord: obj.sord || '',
                 pageNo: pN,
@@ -305,7 +301,7 @@ function data() {
         getOrderBreedInfo: function(cb,obj) {
             var callback = cb || function() {};
             requestData('business/getOrderBreedInfo', {
-                yearMonth: date,
+                yearMonth: sessionStorage.getItem('time'),
                 pageNo: pN,
                 pageSize: pS,
                 sidx: obj.sidx || '',
@@ -319,11 +315,8 @@ function data() {
         getDefaultOrderBreedInfo: function(cb,obj) {
             var callback = cb || function() {};
             requestData('business/getDefaultOrderBreedInfo', {
-                yearMonth: date,
-                pageNo: pN,
-                pageSize: pS
+                yearMonth: sessionStorage.getItem('time')
             }, function(res, total) {
-                pN++;
                 callback(res, total, date);
             })
         },
@@ -331,7 +324,7 @@ function data() {
         editUserBreedInfo: function(cb,obj) {
             var callback = cb || function() {};
             requestData('business/getOrderBreedInfo', {
-                yearMonth: date,
+                yearMonth: sessionStorage.getItem('time'),
                 pageNo: pN,
                 pageSize: pS,
                 sidx: obj.sidx || '',
@@ -342,9 +335,9 @@ function data() {
                 $.each(res, function() {
                     str += '<li><label class="label-checkbox item-content"><input type="checkbox" value="' + this.id + '" name="my-radio"><div class="item-media"><i class="icon icon-form-checkbox"></i></div><div class="item-inner">';
                     str += '<div class="col-4-ds"><span>' + this.areaName + '</span></div>';
-                    str += '<div class="col-4-tym">' + this.genericName + '<i class="bradge">' + translateIcoType(this.icoType) + '</i></div>';
+                    str += '<div class="col-4-tym">' + (this.genericNameShort || this.genericName) + '<i class="bradge">' + translateIcoType(this.icoType) + '</i></div>';
                     str += '<div class="yxyy">' + this.lockCount + '/' + this.hosCount + '</div>';
-                    str += '<div class="yxyy">' + this.userLockCount + '/' + this.hosCount + '</div>';
+                    str += '<div class="yxyy">' + this.userLockCount + '</div>';
                     str += '</div></label></li>';
                 })
                 $(str).appendTo($('#deleteUserBreedInfo'));
@@ -452,25 +445,24 @@ function data() {
                 areaName: encode($('#globalPrivices').val()),
                 genericName: encode($('#search').val()),
                 pageNo: pN,
-                pageSize: 10
+                pageSize: pS
             }, function(res, total) {
                 if(res.length == 0){
-                  noDataFn();
-                  return;
+                  noDataFn($('#searchOrderBreedInfo'));
                 }else{
-                  hasDataFn();
+                  hasDataFn($('#searchOrderBreedInfo'));
                 }
                 var str = '';
                 $.each(res, function() {
                     str += '<li class="item-content" data-id="' + this.id + '" data-aid = "' + this.areaId + '"><div class="item-inner">';
                     str += '<div class="col-4-ds text-left"><span>' + this.areaName + '</span></div>';
-                    str += '<div class="col-3-tym">' + this.genericName + '<i class="bradge">' + translateIcoType(this.icoType) + '</i></div>';
+                    str += '<div class="col-3-tym">' + this.genericName + (this.genericNameShort ? '('+this.genericNameShort+')' : '') + '<i class="bradge">' + translateIcoType(this.icoType) + '</i></div>';
                     str += '<div class="add ' + (this.isOpt !== 0 ? 'hidden' : '') + '" onClick="addAction(this)"><i class="fa fa-plus-circle fa-lg"></i></div>';
                     str += '<div class="add ' + (this.isOpt === 0 ? 'hidden' : '') + '"><i class="fa fa-check-circle fa-lg"></i></div>';
                     str += '</div></li>';
                 })
                 $(str).appendTo($('#searchOrderBreedInfo'));
-                // console.log();
+                console.log('结束渲染操作进入回调事件');
                 callback(total);
                 pN++;
             });
@@ -491,7 +483,7 @@ function data() {
                 hospitalId: url2obj(location.search).hId,
                 breedId: url2obj(location.search).bId,
                 areaId: url2obj(location.search).aId,
-                yearMonth: url2obj(location.search).time,
+                yearMonth: sessionStorage.getItem('time'),
                 sidx: obj.sidx || '',
                 sord: obj.sord || '',
                 pageNo: pN,

@@ -8,6 +8,7 @@
     <meta http-equiv="pragma" content="no-cache">
     <title>医院列表</title>
     <link href="../lib/light7/css/light7.min.css" rel="stylesheet" />
+    <link href="../lib/light7/css/light7-extend.min.css" rel="stylesheet" />
     <link href="../lib/fontAw/css/font-awesome.min.css" rel="stylesheet" />
     <link href="../dist/css/all.css" rel="stylesheet" />
   </head>
@@ -17,8 +18,8 @@
       <div class="bar select-header-secondary">
         <div class="row no-gutter table-row-header no-edit">
           <div class="col-4-ds" style="text-align:left">地市</div>
-          <div class="col-5-tym">通用名</div>
-          <div class="yxyy yxyy-38 no-add">
+          <div class="col-5-tym" style="width:25%">通用名</div>
+          <div class="yxyy yxyy-38 no-add" style="width:48%;text-align:left;">
             已选医院
           </div>
         </div>
@@ -37,10 +38,11 @@
     </div>
     <!-- <script src="dist/js/jquery.min.js"></script> -->
     <script type="text/javascript" src="../src/js/jweixin-1.0.0.js"></script>
-    <script src="http://light7.org/assets/js/zepto.js"></script>
+    <script src="../src/js/zepto.js"></script>
     <script type="text/javascript" src="../src/js/common.js"></script>
     <script src="../lib/light7/js/light7.js"></script>
     <script type="text/javascript" src="../lib/light7/js/light7-city-picker.min.js" charset="utf-8"></script>
+    <script type="text/javascript" src="../lib/light7/js/light7-extend.min.js"></script>
     <script type="text/javascript" src="../src/js/data.api.js"></script>
     <script src="../src/js/all.js"></script>
     <script type="text/javascript">
@@ -73,13 +75,18 @@
         var str = '';
         $.each(data, function() {
             str += '<li class="item-content no-edit" data-id="'+this.id+'" data-hosCode="'+this.hospitalCode+'" data-hId="'+this.hospitalId+'" data-aId="'+this.areaId+'" data-bId="'+this.breedId+'"'+'" data-lockStatus="'+this.lockStatus+'"><div class="item-inner">';
+            str += '<div';
+            if(this.isLockStatus != 0){
+              str += ' onclick="getHosInfo(this)"';
+            }
+            str += '>';
             str += '<div class="col-4-ds text-left"><span>' + this.areaName + '</span></div>';
-            str += '<div class="col-5-tym has-add">' + this.genericName + '<i class="bradge">' + translateIcoType(this.routeIcoType) + '</i></div>';
-            
+            str += '<div class="col-5-tym has-add" style="width:25%;">' + (this.genericNameShort || this.genericName) + '<i class="bradge">' + translateIcoType(this.routeIcoType) + '</i></div>';
+  
             if(this.isLockStatus == 0){
-                str += '<div class="yxyy yxyy-38 no-add" onclick="getHosInfo(this)">' + this.hospitalCode + ' ' + this.hospitalShortName + ' (数据正在调研中，敬请期待!)<i class="bradge no-bg">' + translateIcoType(this.hosIcoType) + '</i></div>';
+                str += '<div class="yxyy yxyy-38 no-add" style="width:56%;text-align:left;">' + this.hospitalCode + ' ' + (this.hospitalShortName || this.hospitalName) + ' (数据正在调研中，敬请期待!)<i class="bradge no-bg">' + translateIcoType(this.hosIcoType) + '</i></div></div>';
             }else{
-                str += '<div class="yxyy yxyy-38" onclick="getHosInfo(this)">' + this.hospitalCode + ' ' + this.hospitalShortName + '<i class="bradge no-bg">' + translateIcoType(this.hosIcoType) + '</i></div>';
+                str += '<div class="yxyy yxyy-38"  style="width:48%;text-align:left;">' + this.hospitalCode + ' ' + (this.hospitalShortName || this.hospitalName) + '<i class="bradge no-bg">' + translateIcoType(this.hosIcoType) + '</i></div></div>';
                 str += '<div class="add "' + (this.lockStatus !== 0 ? 'hidden' : '') + ' onclick="unlockAction(this)"><i class="fa fa-lock fa-lg"></i></div>';
                 str += '<div class="add "' + (this.lockStatus === 0 ? 'hidden' : '') + '><i class="fa fa-unlock fa-lg"></i></div>';
             }
@@ -87,6 +94,15 @@
         })
         $(str).appendTo($('#getUserHostInfo'));
        }
+    </script>
+    <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?a7277cbc790008ad84ec010f0d2df209";
+      var s = document.getElementsByTagName("script")[0]; 
+      s.parentNode.insertBefore(hm, s);
+    })();
     </script>
   </body>
 </html>

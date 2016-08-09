@@ -8,6 +8,7 @@
     <meta http-equiv="pragma" content="no-cache">
     <title>市场行情</title>
     <link href="../lib/light7/css/light7.min.css" rel="stylesheet" />
+    <link href="../lib/light7/css/light7-extend.min.css" rel="stylesheet" />
     <link href="../lib/fontAw/css/font-awesome.min.css" rel="stylesheet" />
     <link href="../dist/css/all.css" rel="stylesheet" />
   </head>
@@ -21,9 +22,9 @@
         </div>
         <h1 class="title">
           <div class="calendar-header">
-            <i class="fa fa-caret-left fa-lg date-input-left"></i>
-            <input type="button" class="date-input" value="2015-12"/>
-            <i class="fa fa-caret-right fa-lg date-input-right"></i>
+            <i class="fa fa-caret-left fa-2x color-primary date-input-left"></i>
+            <input type="button" class="date-input" id="my-input" value="加载中"/>
+            <i class="fa fa-caret-right fa-2x color-primary date-input-right"></i>
           </div>
         </h1>
       </header>
@@ -46,17 +47,17 @@
               <ul class="row no-gutter" id="businessConcept"></ul>
             </div>
             <div class="content-block-title clearfix">
-              <span class="pull-left">品种涨幅榜</span><a id="businessBreedByUpInfo" href="rise.html" class="more external pull-right"><i class="fa fa-ellipsis-h"></i></a>
+              <span class="pull-left">品种影响力排行榜</span><a id="businessBreedByUpInfo" href="rise.html" class="more external pull-right"><i class="fa fa-ellipsis-h"></i></a>
             </div>
             <div class="list-block item-pean-horizontal">
               <ul class="table-row" id="businessBreedUp"></ul>
             </div>
-            <div class="content-block-title clearfix">
+            <!-- <div class="content-block-title clearfix">
               <span class="pull-left">品种跌幅榜</span><a id="businessBreedByDownInfo" href="rise.html" class="more external pull-right"><i class="fa fa-ellipsis-h"></i></a>
             </div>
             <div class="list-block item-pean-horizontal">
               <ul class="table-row" id="businessBreedDown"></ul>
-            </div>
+            </div> -->
           </div>
 
       </div>
@@ -66,20 +67,20 @@
           <span class="icon icon-cart"></span>
           <span class="tab-label">自选</span>
         </a>
-        <a class="tab-item external" href="#">
+        <div class="tab-item tab-product">
           <span class="icon icon-app"></span>
           <span class="tab-label">产品</span>
-        </a>
+        </div>
         <a class="tab-item active external" href="javascript:void(0)">
           <div class="index-obj">
             <span class="icon icon-browser"></span>
             <span class="tab-label">行情</span>
           </div>
         </a>
-        <a class="tab-item external" href="#">
+        <div class="tab-item tab-hospital">
           <span class="icon icon-card"></span>
           <span class="tab-label">医院</span>
-        </a>
+        </div>
         <a class="tab-item external" href="user.html">
           <span class="icon icon-friends"></span>
           <span class="tab-label">个人中心</span>
@@ -93,55 +94,38 @@
     <div class="panel panel-left panel-reveal theme-dark" id='panel-left'></div>
     <!-- <script src="dist/js/jquery.min.js"></script> -->
     <script type="text/javascript" src="../src/js/jweixin-1.0.0.js"></script>
-    <script src="http://light7.org/assets/js/zepto.js"></script>
+    <script src="../src/js/zepto.js"></script>
+    <script type="text/javascript" src="../src/js/common.js"></script>
     <script src="../lib/light7/js/light7.js"></script>
     <script type="text/javascript" src="../lib/light7/js/light7-city-picker.min.js" charset="utf-8"></script>
+    <script type="text/javascript" src="../lib/light7/js/light7-extend.min.js"></script>
     <script type="text/javascript" src="../src/js/data.api.js"></script>
     <script src="../src/js/all.js"></script>
     <script type="text/javascript">
-      if(!sessionStorage.getItem('areaName')){
-        $.showPreloader('正在获取地理位置...');
-        wx.ready(function(){
-        wx.getLocation({
-          type: 'wgs84', // 默认为wgs84的gps坐标，如果要返回直接给openLocation用的火星坐标，可传入'gcj02'
-          success: function (res) {
-              //获取地理位置信息接口
-              $.ajax({
-                  url: httpAddress +'business/getUserAreaInfo?'+ +new Date(),
-                  data: {
-                      latitude:res.latitude,
-                      longitude:res.longitude
-                  },
-                  dataType: 'JSON',
-                  type: 'POST',
-                  async: false,
-                  timeout: 40 * 1000,
-                  success: function(res) {
-                      var res = JSON.parse(res);
-                      sessionStorage.setItem('areaName',res.datas.areaName);
-                      sessionStorage.setItem('areaId',res.datas.areaId);
-                      sessionStorage.setItem('time',res.datas.yearMonth);
-                      dataApi.changePrivice(res.datas.areaId,res.datas.areaName);
-                      dataApi.changeDate(res.datas.yearMonth);
-                      dataApi.getInitWxUser();
-                      dataApi.getIndexData();     
-                  },
-                  error: function(xhr) {
-                      $.hidePreloader();
-                      $.alert('网络故障!' + xhr);
-                  }
-              });
-          }
-          });
-      })
-      }else{
-        dataApi.changePrivice(sessionStorage.getItem('areaId'),sessionStorage.getItem('areaName'));
-        dataApi.changeDate(sessionStorage.getItem('time'));
-        dataApi.getInitWxUser();
-        dataApi.getIndexData();   
-}
+      //初始化异步日历方法
+      calenderFn(function(){
+        dataApi.getIndexData();
+      });
+      initData(function(){
+        dataApi.getIndexData();
+      });
+      // 切换省份
+      function tabProvices2(obj) {
+          $this = $(obj);
+          sessionStorage.setItem('areaName', $this.text());
+          sessionStorage.setItem('areaId', $this.data('id'));
+          dataApi.setInit();
+          dataApi.getIndexData();
+      }
     </script>
-                    
-              
+    <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?a7277cbc790008ad84ec010f0d2df209";
+      var s = document.getElementsByTagName("script")[0]; 
+      s.parentNode.insertBefore(hm, s);
+    })();
+    </script>          
   </body>
 </html>

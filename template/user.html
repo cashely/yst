@@ -8,6 +8,7 @@
     <meta http-equiv="pragma" content="no-cache">
     <title>个人中心</title>
     <link href="../lib/light7/css/light7.min.css" rel="stylesheet" />
+    <link href="../lib/light7/css/light7-extend.min.css" rel="stylesheet" />
     <link href="../lib/fontAw/css/font-awesome.min.css" rel="stylesheet" />
     <link href="../dist/css/all.css" rel="stylesheet" />
   </head>
@@ -18,7 +19,7 @@
             <div class="list-block media-list">
               <ul>
                 <li>
-                  <a href="#" class="item-user-block">
+                  <a href="#" class="item-user-block item-content">
                     <div class="item-media"><img id="userImg" src="../src/images/logo.jpg" style='width: 3rem;'></div>
                     <div class="item-inner">
                       <div class="item-title-row">
@@ -34,12 +35,12 @@
               <ul>
                 <li class="item-content">
                   <div class="item-inner">
-                    <div class="item-title"><i class="fa fa-fw fa-upload fa-lg color-primary"></i> 上报数据</div>
+                    <div class="item-title"><i class="fa fa-fw fa-upload fa-lg color-primary"></i> 上报数据<span style="font-size:.5rem;color:#666">(建设中...)</span></div>
                   </div>
                 </li>
                 <li class="item-content">
                   <div class="item-inner">
-                    <div class="item-title"><i class="fa fa-fw fa-line-chart fa-lg color-success"></i> 销售管理</div>
+                    <div class="item-title"><i class="fa fa-fw fa-line-chart fa-lg color-success"></i> 销售管理<span style="font-size:.5rem;color:#666">(建设中...)</span></div>
                   </div>
                 </li>
               </ul>
@@ -53,7 +54,7 @@
                 </li>
                 <li class="item-content">
                   <div class="item-inner">
-                    <div class="item-title"><i class="fa fa-fw fa-question-circle fa-lg color-danger"></i> 帮助中心</div>
+                    <a href="word.html" class="item-title item-link external"><i class="fa fa-fw fa-question-circle fa-lg color-danger"></i> 帮助中心</a>
                   </div>
                 </li>
                 <!-- <li class="item-content" onclick="shareAction()">
@@ -71,20 +72,20 @@
           <span class="icon icon-cart"></span>
           <span class="tab-label">自选</span>
         </a>
-        <a class="tab-item external" href="#">
+        <div class="tab-item tab-product">
           <span class="icon icon-app"></span>
           <span class="tab-label">产品</span>
-        </a>
+        </div>
         <a class="tab-item external" href="index.html">
           <div class="index-obj">
             <span class="icon icon-browser"></span>
             <span class="tab-label">行情</span>
           </div>
         </a>
-        <a class="tab-item external" href="#">
+        <div class="tab-item tab-hospital">
           <span class="icon icon-card"></span>
           <span class="tab-label">医院</span>
-        </a>
+        </div>
         <a class="tab-item external active" href="javascript:void(0)">
           <span class="icon icon-friends"></span>
           <span class="tab-label">个人中心</span>
@@ -93,17 +94,29 @@
     </div>
     <!-- <script src="dist/js/jquery.min.js"></script> -->
     <script type="text/javascript" src="../src/js/jweixin-1.0.0.js"></script>
-    <script src="http://light7.org/assets/js/zepto.js"></script>
+    <script src="../src/js/zepto.js"></script>
     <script src="../lib/light7/js/light7.js"></script>
-    <script type="text/javascript" src="../lib/light7/js/light7-city-picker.min.js" charset="utf-8"></script>
+    <script type="text/javascript" src="../lib/light7/js/light7-city-picker.min.js"></script>
+    <script type="text/javascript" src="../lib/light7/js/light7-extend.min.js"></script>
     <script type="text/javascript" src="../src/js/common.js"></script>
     <script type="text/javascript" src="../src/js/data.api.js"></script>
     <script src="../src/js/all.js"></script>
     <script type="text/javascript">
-      dataApi.getWxUserInfo(function(data){
-        document.getElementById('userImg').setAttribute('src',data.imgUrl);
-        document.getElementById('userName').innerText = data.userName;
+      initData(function(){
+        dataApi.getWxUserInfo(function(data){
+          document.getElementById('userImg').setAttribute('src',data.imgUrl);
+          document.getElementById('userName').innerText = data.userName;
+        });
       });
+    </script>
+    <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?a7277cbc790008ad84ec010f0d2df209";
+      var s = document.getElementsByTagName("script")[0]; 
+      s.parentNode.insertBefore(hm, s);
+    })();
     </script>
   </body>
 </html>
