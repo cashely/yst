@@ -8,6 +8,7 @@
     <meta http-equiv="pragma" content="no-cache">
     <title>加载中...</title>
     <link href="../lib/light7/css/light7.min.css" rel="stylesheet" />
+    <link href="../lib/light7/css/light7-extend.min.css" rel="stylesheet" />
     <link href="../lib/fontAw/css/font-awesome.min.css" rel="stylesheet" />
     <link href="../dist/css/all.css" rel="stylesheet" />
   </head>
@@ -15,7 +16,7 @@
     <div class="page">
       <!-- 头部筛选 start -->
       <header class="bar bar-nav select-header">
-              <div class="buttons-row">
+              <div class="buttons-row" style="margin:0 auto;width:50%;">
                 <a href="add-hospital.html" id="addHospital" class="external button">添加</a>
                 <a href="edit-hospital.html" id="editHospital" class="external button">编辑</a>
               </div>
@@ -45,9 +46,10 @@
     </div>
     <!-- <script src="dist/js/jquery.min.js"></script> -->
     <script type="text/javascript" src="../src/js/jweixin-1.0.0.js"></script>
-    <script src="http://light7.org/assets/js/zepto.js"></script>
+    <script src="../src/js/zepto.js"></script>
     <script src="../lib/light7/js/light7.js"></script>
     <script type="text/javascript" src="../lib/light7/js/light7-city-picker.min.js" charset="utf-8"></script>
+    <script type="text/javascript" src="../lib/light7/js/light7-extend.min.js"></script>
     <script type="text/javascript" src="../src/js/common.js"></script>
     <script type="text/javascript" src="../src/js/data.api.js"></script>
     <script src="../src/js/all.js"></script>
@@ -86,9 +88,9 @@
         $.each(data, function() {
             str += '<li class="item-content no-edit" data-id="'+this.id+'" data-hosCode="'+this.hospitalCode+'" data-hId="'+this.hospitalId+'" data-lockStatus="'+this.lockStatus+'"><div class="item-inner">';
             if(this.isLockStatus == 0){
-              str += '<div class="col-2-tym" onclick="getHosInfo(this)">' + this.hospitalCode + ' ' + this.hospitalShortName + ' (数据正在调研中，敬请期待)<i class="bradge no-bg">' + translateIcoType(this.icoType) + '</i></div>';
+              str += '<div class="col-2-tym" onclick="getHosInfo(this)">' + this.hospitalCode + ' ' + (this.hospitalShortName || this.hospitalName) + ' (数据正在调研中，敬请期待)<i class="bradge no-bg">' + translateIcoType(this.icoType) + '</i></div>';
             }else{
-              str += '<div class="col-2-tym" onclick="getHosInfo(this)"><a class="item-link" href="#">' + this.hospitalCode + ' ' + this.hospitalShortName + '<i class="bradge no-bg">' + translateIcoType(this.icoType) + '</i></a></div>';
+              str += '<div class="col-2-tym" onclick="getHosInfo(this)"><a class="item-link" href="#">' + this.hospitalCode + ' ' + (this.hospitalShortName || this.hospitalName) + '<i class="bradge no-bg">' + translateIcoType(this.icoType) + '</i></a></div>';
               str += '<div class="add ' + (this.lockStatus !== 0 ? 'hidden' : '') + '" onclick="unlockAction(this)"><i class="fa fa-lock fa-lg"></i></div>';
             }
             
@@ -97,6 +99,15 @@
         });
         $(str).appendTo($('#getUserBreedHospitalInfo'));
       }
+    </script>
+    <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?a7277cbc790008ad84ec010f0d2df209";
+      var s = document.getElementsByTagName("script")[0]; 
+      s.parentNode.insertBefore(hm, s);
+    })();
     </script>
   </body>
 </html>

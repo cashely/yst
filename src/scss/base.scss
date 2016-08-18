@@ -39,7 +39,6 @@ a{
   &.more{
     display: inline-block;
     max-width: 2rem;
-    width: 1rem;
   }
 }
 html,body{
@@ -123,7 +122,7 @@ body{
   .item-pean-footer{
     span{
       padding: 0 .2rem;
-      @include zhibiao;
+      font-size: .55rem;
       display: inline-block;
       &.up{
         color: red;
@@ -239,10 +238,6 @@ body{
 .item-content{
   text-align: left;
   .item-media{
-    position: absolute;
-    left: 0.2rem;
-    color: lighten(#000,50%);
-    display: block;
   }
   &.yl{
     margin-bottom:.75rem;
@@ -279,11 +274,14 @@ body{
 }
 .item-pean-horizontal{
   .item-content{
-    display:block;
+    // display:block;
     overflow: hidden;
     clear: both;
     line-height: 1.5rem;
   }
+}
+.list-block .item-media+.item-inner{
+  margin-left: .25rem;
 }
 .item-title{
   > span{
@@ -403,10 +401,6 @@ body{
     text-align: left;
   }
 }
-.list-block .item-media+.item-inner{
-  padding-left: 0.75rem;
-  margin-left: 0;
-}
 .item-media{
   >.fa{
     vertical-align: middle;
@@ -465,10 +459,7 @@ body{
     height: 1px;
   }
   .item-media{
-    float: left;
-    padding-left:0.45rem;
-    padding-right:0.45rem;
-    overflow: hidden;
+    
     img{
       border-radius:.5rem;
     }
@@ -517,6 +508,13 @@ body{
 .calendar-header{
   float: right;
   font-size: .75rem;
+  .fa{
+    padding: 0 .6rem;
+    display: inline-block;
+    line-height: 2.2rem;
+    /* float: left; */
+    vertical-align: top;
+  }
 }
 .date-input{
   border-width:0;
@@ -573,7 +571,7 @@ body{
   color: #666;
   font-weight: 300;
   &.select-header{
-    padding-left:1rem;
+    padding-left:2.1rem;
     // padding-right:.5rem;
   }
   [class^='col-'],.yxyy{
@@ -753,7 +751,6 @@ body{
 }
 .date-input{
   font-weight: 300;
-  padding-right:.3rem;
 }
 .bradge{
   display: block;
@@ -905,9 +902,14 @@ body{
 }
 .noDataTip{
   text-align: center;
-  line-height: 10;
+  line-height: 2;
   font-size: .7rem;
+  padding-top:2rem;
   color: lighten(#000,65%);
+  >i{
+    display: block;
+    color: lighten(#000,75%);
+  }
 }
 .yxyy-38{
   width: 38%;
@@ -916,9 +918,146 @@ body{
   }
 }
 .bar-nav .buttons-row .button{
+<<<<<<< HEAD
   top:.25rem;
+=======
+  top:.05rem;
+  height: 2.05rem;
+  line-height: 2.05rem;
+  background-color:#0894ec;
+  border-color:#0681CE;
+  color: #fff;
+>>>>>>> canlendarStyle
 }
-.button{
-  height: 1.55rem;
-  line-height: 1.55rem;
+.hos-header{
+  .hos-img{
+    img{
+      width: 100%;
+      display: block;
+      height: auto;
+    }
+  }
+  .fa-thumbs-o-up{
+    line-height: inherit;
+  }
+  .item-inner{
+    font-size: .7rem;
+    line-height: 1.40rem;
+  }
+}
+.card{
+  &.no-margin{
+    margin:0;
+  }
+  &.card-tdjs{
+    img{
+      width: 4rem;
+    }
+    table{
+      text-align:center;
+    }
+  }
+}
+.popup-intro{
+  h3{
+    margin:0;
+    font-size: .8rem;
+  }
+  p{
+    font-size: .7rem;
+    text-indent: 2em;
+  }
+}
+.go-hospital-button{
+  .button{
+    border-width:0;
+  }
+}
+.list-block{
+  .no-link{
+      .item-inner{
+        padding-right:1.5rem;
+        background-image:none;
+      }
+  }
+}
+.photo-browser-swiper-wrapper{
+  position:absolute;
+}
+.photo-browser-swiper-container,.photo-browser-swiper-wrapper{
+  width: 100%;
+  height: 100%;
+}
+.photo-browser-zoom-container{
+  width: 100%;
+  height: 100%;
+  img{
+    max-width: 100%;
+    width: 100%;
+  }
+}
+.slide-box{
+  width: 100%;
+  height: 100%;
+  background-position:0 0;
+  background-repeat:no-repeat;
+  background-size:100% 100%;
+  >span{
+    display: block;
+    text-align:center;
+    width: 2rem;
+    height: 2rem;
+    background-color:rgba(0,0,0,.5);
+    position:absolute;
+    right: .5rem;
+    font-size: .5rem;
+    border:.1rem solid rgba(255,255,255,.8);
+    box-sizing:content-box;
+    top: .5rem;
+    border-radius:100%;
+    color: #fff;
+    line-height: 2rem;
+  }
+  &.slide-1{
+    background-image:url(../../src/images/adv/1.jpg);
+  }
+  &.slide-2{
+    background-image:url(../../src/images/adv/2.jpg);
+  }
+  &.slide-3{
+    background-image:url(../../src/images/adv/3.jpg);
+  }
+  &.slide-4{
+    background-image:url(../../src/images/adv/4.jpg);
+  }
+  &.slide-5{
+    background-image:url(../../src/images/adv/5.jpg);
+  }
+  &.slide-6{
+    background-image:url(../../src/images/adv/7.jpg);
+  }
+  &.slide-7{
+    background-image:url(../../src/images/adv/6.jpg);
+  }
+  .slide-break-button{
+    position:absolute;
+    width: 10rem;
+    left: 50%;
+    bottom:2rem;
+    margin-left:-5rem;
+  }
+}
+.photo-browser-popup{
+  z-index: 9999999999999;
+}
+.doc-content{
+  padding:10px;
+  p{
+    text-align: justify;
+  }
+  img{
+    display: block;
+    max-width: 100%;
+    width: auto;
+  }
 }

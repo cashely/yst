@@ -26,40 +26,98 @@ $(function() {
     var date = $('#my-input').val() === '' ? today.getMonth() + 1 + '月 ' + today.getFullYear() + '年' : $('#my-input').val();
     $('#my-input').val(date);
     // }
+    // calenderFn();
+});
+
+function calenderFn(cb) {
+    var callback = cb || function() {}; //执行每个页面产生的回掉方法
     // 初始化日历组件
     $('#my-input').picker({
         toolbar: true,
         rotateEffect: true,
-        // updateValuesOnMomentum:false,
-        // updateValuesOnTouchmove:false,
+        onOpen: function() {
+            $('#my-input').picker("setValue", time2date(sessionStorage.getItem('time')).split(' '));
+        },
         onClose: function(p) {
-            var month = p.value[0].replace('月', '');
-            tabTime2(p.value[1].replace('年', '') + '-' + ((month.length < 2) ? ('0' + month) : month));
+            var month = p.value[1].replace('月', '');
+            var time = p.value[0].replace('年', '') + '-' + ((month.length < 2) ? ('0' + month) : month);
+            // 时间写入session存储
+            sessionStorage.setItem('time', time);
+            callback(time);
         },
         toolbarTemplate: '<header class="bar bar-nav">\
     <button class="button button-link pull-right close-picker">确定</button>\
     <h1 class="title">选择日期和时间</h1>\
 </header>',
         cols: [
-            // Months
-            {
-                values: ('1月 2月 3月 4月 5月 6月 7月 8月 9月 10月 11月 12月').split(' '),
-                displayValues: ('1月 2月 3月 4月 5月 6月 7月 8月 9月 10月 11月 12月').split(' '),
-                textAlign: 'left'
-            },
             // Years
             {
                 values: (function() {
                     var arr = [];
-                    for (var i = 1950; i <= 2030; i++) {
+                    for (var i = 2014; i <= 2015; i++) {
                         arr.push(i + '年');
                     }
                     return arr;
-                })(),
+                })()
+            },
+            // Months
+            {
+                values: ('01月 02月 03月 04月 05月 06月 07月 08月 09月 10月 11月 12月').split(' '),
+                textAlign: 'left'
             }
         ]
     });
-});
+    // 重构日历切换方法
+    $(document).on('click', '.date-input-left', function() {
+        toggleDate(-1);
+    });
+    $(document).on('click', '.date-input-right', function() {
+        var date = $('.date-input').val().replace(/年?月?/g, '').split(' '); //['2015','12']
+        var maxTime = sessionStorage.getItem('maxTime').split('-'); //['2015','12']
+        if (date[1] >= maxTime[1] && date[0] >= maxTime[0]) {
+            $.alert('亲~，往后的数据还未更新噢，敬请期待。');
+        } else {
+            toggleDate(1);
+        }
+    });
+
+    function toggleDate(m) {
+        var callback = cb || function() {};
+        var nowDate = $('.date-input').val();
+        var dateArray = nowDate.split(' ');
+
+        dateArray[0] = dateArray[0].replace('年', '');
+        dateArray[1] = dateArray[1].replace('月', '');
+        if (m > 0) {
+            if (dateArray[1] < 12) {
+                ++dateArray[1];
+            } else {
+                ++dateArray[0];
+                dateArray[1] = 1;
+            }
+        } else {
+            if (dateArray[1] > 1) {
+                --dateArray[1];
+            } else {
+                --dateArray[0];
+                dateArray[1] = 12;
+            }
+        }
+        dateArray[1] = ((dateArray[1] + "").length < 2 ? ('0' + dateArray[1].toString()) : dateArray[1]);
+        // console.log([dateArray[0]+'年', dateArray[1]+"月"]);
+        $('#my-input').picker("setValue", [dateArray[0] + "年", dateArray[1] + "月"]);
+        dateArray = dateArray.join('-');
+
+        // 格式化时间为XXXX年XX月
+        console.log(dateArray);
+        $('.date-input').val(time2date(dateArray)); //时间写入页面input
+        console.log($('.date-input').val(), '改变后的input真实时间');
+        // 时间写入session存储
+        sessionStorage.setItem('time', dateArray);
+        callback(dateArray);
+    }
+}
+
 $.fn.overFlowText = function() {
     "use strict";
     return this.each(function() {
@@ -91,7 +149,7 @@ $.fn.overFlowText = function() {
 }($);
 
 function hideSblings(e) {
-    $(e).children('a').toggleClass('hidden');
+    $(e).children('span').toggleClass('hidden');
     $('.yxyy').siblings('.yxyy').toggleClass('hidden');
 }
 // 添加
@@ -125,25 +183,25 @@ function addHosAction(obj) {
 function unlockAction(obj) {
     var $this = $(obj);
     var num = $('#allHospital').text();
-    
-    if(num != 0){
+
+    if (num != 0) {
         $.confirm('您当前可解锁医院数为' + num + '个，是否解锁?', '提示', function() {
             dataApi.insertUserBreedHosLockInfo(($this.parents('li').data('id') || url2obj(location.search).id), function() {
-                var url = 'unlock-success.html?title='+ (url2obj(location.search).hosCode || $this.parents('li').data('hosCode')) +'&hId=' + ($this.parents('li').data('hId') || url2obj(location.search).hId) + '&bId=' + url2obj(location.search).bId + '&aId=' + url2obj(location.search).aId + '&time=' + url2obj(location.search).time + '&hosCode=' + (url2obj(location.search).hosCode || $this.parents('li').data('hosCode')) + '&id=' + ($this.parents('li').data('id') || url2obj(location.search).id) + '&type=' + url2obj(location.search).type;
+                var url = 'unlock-success.html?title=' + (url2obj(location.search).hosCode || $this.parents('li').data('hosCode')) + '&hId=' + ($this.parents('li').data('hId') || url2obj(location.search).hId) + '&bId=' + url2obj(location.search).bId + '&aId=' + url2obj(location.search).aId + '&time=' + url2obj(location.search).time + '&hosCode=' + (url2obj(location.search).hosCode || $this.parents('li').data('hosCode')) + '&id=' + ($this.parents('li').data('id') || url2obj(location.search).id) + '&type=' + url2obj(location.search).type;
                 location.href = url;
             });
         });
-    }else{
-        location.href="contact.html";
+    } else {
+        location.href = "contact.html";
     }
-    
+
 }
 // 解锁
 function getHosInfo(obj) {
     var $this = $(obj);
     var isLock = ($this.parents('li').data('lockStatus') == '1' ? true : false);
-    var url = 'unlock-success.html?title='+ (url2obj(location.search).hosCode || $this.parents('li').data('hosCode')) +'&hId=' + ($this.parents('li').data('hId') || url2obj(location.search).hId) + '&bId=' +($this.parents('li').data('bId') ||  url2obj(location.search).bId) + '&aId=' +($this.parents('li').data('aId') ||  url2obj(location.search).aId) + '&time=' + url2obj(location.search).time + '&hosCode=' + (url2obj(location.search).hosCode || $this.parents('li').data('hosCode')) + '&id=' + ($this.parents('li').data('id') || url2obj(location.search).id) + '&type=' + url2obj(location.search).type;
-      // console.log(url2obj(location.search).type);  
+    var url = 'unlock-success.html?title=' + (url2obj(location.search).hosCode || $this.parents('li').data('hosCode')) + '&hId=' + ($this.parents('li').data('hId') || url2obj(location.search).hId) + '&bId=' + ($this.parents('li').data('bId') || url2obj(location.search).bId) + '&aId=' + ($this.parents('li').data('aId') || url2obj(location.search).aId) + '&time=' + url2obj(location.search).time + '&hosCode=' + (url2obj(location.search).hosCode || $this.parents('li').data('hosCode')) + '&id=' + ($this.parents('li').data('id') || url2obj(location.search).id) + '&type=' + url2obj(location.search).type;
+    // console.log(url2obj(location.search).type);  
     location.href = url;
 }
 //切换市场规模指标
@@ -187,9 +245,9 @@ requestData('business/getJsSdkInfo', {
 wx.ready(function() {
     // 分享
     var info = {
-        title: '药市通-医药行业的「股市」利器',
+        title: '药市通-医药圈的「股市」神器',
         link: 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx06af7b346a9e1f77&redirect_uri=http://yst.immortalshealth.com/yst/template/index.html&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect',
-        imgUrl: 'http://yst.immortalshealth.com/test/src/images/logo.jpg',
+        imgUrl: 'http://yst.immortalshealth.com/yst/src/images/logo.jpg',
         desc: '通过市场行情引导，进行产品自选和医院绑定，辅助销售人员管理自己的重点客户和重要信息，以达成销售目标'
     };
     wx.onMenuShareTimeline({
@@ -213,6 +271,83 @@ wx.ready(function() {
         }
     });
 })
+
+function initData(callback) {
+    if (!sessionStorage.getItem('areaName')) {
+        dataApi.getInitWxUser();
+        showSlide();
+        wx.ready(function() {
+            // $.showPreloader('正在获取地理位置...');
+            wx.getLocation({
+                type: 'wgs84', // 默认为wgs84的gps坐标，如果要返回直接给openLocation用的火星坐标，可传入'gcj02'
+                success: function(res) {
+                    //获取地理位置信息接口
+                    $.ajax({
+                        url: httpAddress + 'business/getUserAreaInfo?' + +new Date(),
+                        data: {
+                            latitude: res.latitude,
+                            longitude: res.longitude
+                        },
+                        dataType: 'JSON',
+                        type: 'POST',
+                        async: false,
+                        timeout: 2 * 1000,
+                        success: function(res) {
+                            // $.showPreloader();
+                            var res = JSON.parse(res);
+                            sessionStorage.setItem('areaName', res.datas.areaName);
+                            sessionStorage.setItem('areaId', res.datas.areaId);
+                            sessionStorage.setItem('time', res.datas.yearMonth);
+                            sessionStorage.setItem('maxTime', res.datas.yearMonth);
+                            dataApi.changePrivice(res.datas.areaId, res.datas.areaName);
+                            dataApi.changeDate(res.datas.yearMonth);
+                            dataApi.setInit();
+                            callback();
+                        },
+                        error: function(xhr) {
+                            // $.hidePreloader();
+                            $.alert('网络故障!' + xhr);
+                        }
+                    });
+                },
+                cancel: function() {
+                    $.ajax({
+                        url: httpAddress + 'business/getUserAreaInfo?' + +new Date(),
+                        data: {
+                            latitude: 113.32198006359,
+                            longitude: 23.134989796208
+                        },
+                        dataType: 'JSON',
+                        type: 'POST',
+                        async: false,
+                        timeout: 2 * 1000,
+                        success: function(res) {
+                            // $.showPreloader();
+                            var res = JSON.parse(res);
+                            sessionStorage.setItem('areaName', res.datas.areaName);
+                            sessionStorage.setItem('areaId', res.datas.areaId);
+                            sessionStorage.setItem('time', res.datas.yearMonth);
+                            sessionStorage.setItem('maxTime', res.datas.yearMonth);
+                            dataApi.changePrivice(res.datas.areaId, res.datas.areaName);
+                            dataApi.changeDate(res.datas.yearMonth);
+                            dataApi.setInit();
+                            callback();
+                        },
+                        error: function(xhr) {
+                            // $.hidePreloader();
+                            $.alert('网络故障!' + xhr);
+                        }
+                    });
+                }
+            });
+        })
+    } else {
+        dataApi.changePrivice(sessionStorage.getItem('areaId'), sessionStorage.getItem('areaName'));
+        dataApi.changeDate(sessionStorage.getItem('time'));
+        dataApi.setInit();
+        callback();
+    }
+}
 //ajax modal
 function requestData(url, parmars, cb) {
     $.showPreloader();
@@ -238,6 +373,8 @@ function requestData(url, parmars, cb) {
                 setTimeout(function() {
                     $.hidePreloader();
                 }, 300);
+            } else if (res.state == 2) {
+                location.href = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx06af7b346a9e1f77&redirect_uri=http://yst.immortalshealth.com/yst/template/index.html&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect';
             } else {
                 $.hidePreloader();
                 $.alert(res.message);
@@ -271,8 +408,7 @@ function url2obj(s) {
 function time2date(t) {
     var str = t.split('-');
     var month = str[1];
-    str[1] = (str[1].indexOf('0') === 0) ? str[1].slice(1) : str[1];
-    return str[1] + '月 ' + str[0] + '年';
+    return str[0] + '年 ' + str[1] + '月';
 }
 //12月 2012年 => 2012-12
 function date2time(d) {
@@ -286,7 +422,7 @@ function getPriviceList() {
     requestData('business/getProvinceInfo', {}, function(res) {
         var str = '';
         $.each(res, function() {
-            if (this.areaStatus) {
+            if (this.areaStatus == 1) {
                 str += '<div class="content-block-title" data-id="' + this.id + '" onclick="showChildProvices(this)">' + this.areaName + '</div>';
             } else {
                 str += '<div class="content-block-title" data-id="' + this.id + '">' + this.areaName + '(暂未开放)</div>';
@@ -309,9 +445,15 @@ function showChildProvices(obj) {
         }, function(res) {
             var str = '<div class="list-block"><ul>';
             $.each(res, function() {
-                str += '<li class="item-content" data-id=' + this.id + ' onClick="tabProvices2(this)">';
-                str += '<div class="item-inner">';
-                str += '<div class="item-title">' + this.areaName + '</div>';
+                if (this.areaStatus == 1) {
+                    str += '<li class="item-content" data-id=' + this.id + ' onClick="tabProvices2(this)">';
+                    str += '<div class="item-inner">';
+                    str += '<div class="item-title">' + this.areaName + '</div>';
+                } else {
+                    str += '<li class="item-content" data-id=' + this.id + '>';
+                    str += '<div class="item-inner">';
+                    str += '<div class="item-title">' + this.areaName + '(暂未开放)</div>';
+                }
                 str += '</div></li>';
             })
             str += '</ul></div>';
@@ -320,32 +462,6 @@ function showChildProvices(obj) {
     }
 }
 getPriviceList();
-
-function tabProvices2(obj) {
-    $this = $(obj);
-    var openUrl;
-    var url;
-    var isIndex = location.href.indexOf('?') === -1;
-    if (isIndex) {
-        openUrl = location.href += '?';
-        url = {};
-    } else {
-        openUrl = location.href.slice(0, location.href.indexOf('?') + 1);
-        url = url2obj(location.search);
-    }
-    console.log(openUrl);
-    url.pName = $this.text();
-    url.areaId = $this.data('id');
-    sessionStorage.setItem('areaName', url.pName);
-    sessionStorage.setItem('areaId', url.areaId);
-    var n = [];
-    $.each(url, function(k, v) {
-        n.push(k + '=' + v);
-    });
-    openUrl += n.join('&');
-    console.log(openUrl);
-    location.href = openUrl;
-}
 
 function tabTime2(time) {
     var openUrl;
@@ -376,7 +492,8 @@ function selectAll(obj) {
     $(obj).addClass('disabled').siblings('.pull-left').removeClass('disabled');
     totalSelect($('.label-checkbox').children('input:first-child').length)
 }
-function diselectAll(obj){
+
+function diselectAll(obj) {
     +($('.label-checkbox').children('input:first-child')).each(function() {
         if ($(this).prop('checked')) $(this).prop('checked', false);
     });
@@ -394,9 +511,10 @@ function totalSelect(num) {
 }
 // 排序变换元素展现功能
 function sortFn(element) {
-    
+
     var $this = $(element);
-    $this.parent().find('.fa').remove();
+    $this.find('.fa').remove();
+    $this.siblings('.sort').find('.fa').remove();
     $this.siblings('.sort').data('sortType', 'asc');
     if ($this.data('sortType') == 'asc' || $this.data('sortType') == undefined || $this.data('sortType') == '') {
         $this.data('sortType', 'desc');
@@ -412,20 +530,61 @@ function sortFn(element) {
 }
 
 // 没有数据的处理方法
-function noDataFn(ele){
+function noDataFn(ele, msg) {
     var element = ele || $('.content');
-    
-    if(element.children('.noDataTip').length > 0) return;
-    $('<div class="noDataTip">:( 没有数据 ~ ~</div>').appendTo(element);
-    element.addClass('noData');
-    return;
+    var message = msg || ':( 没有数据 ~ ~';
+    if (element.next('.noDataTip').length == 0) {
+        $('<div class="noDataTip"><i class="fa fa-4x fa-exclamation-triangle"></i>' + message + '</div>').insertAfter(element);
+        element.addClass('noData');
+    }
 }
-function hasDataFn(ele){
+
+function hasDataFn(ele) {
     var element = ele || $('.content');
-    element.removeClass('noData').children('.noDataTip').remove();
+    element.removeClass('noData').next('.noDataTip').remove();
+}
+
+//产品&医院暂未开放
+$(document).on('click', '.tab-hospital', function(event) {
+    $.alert('大楼怎么盖？欢迎来丢砖！小伙伴们一起来盖楼吧~！');
+})
+$(document).on('click', '.tab-product', function(event) {
+    $.alert('正在建设中...');
+});
+
+// 图片浏览区域
+var myPhotoBrowserStandalone = $.photoBrowser({
+    photos: [{
+        html: '<div class="slide-box slide-1"><span class="slide-break photo-browser-close-link close-popup">跳过</span></div>'
+    }, {
+        html: '<div class="slide-box slide-2"><span class="slide-break photo-browser-close-link close-popup">跳过</span></div>'
+    }, {
+        html: '<div class="slide-box slide-3"><span class="slide-break photo-browser-close-link close-popup">跳过</span></div>'
+    }, {
+        html: '<div class="slide-box slide-4"><span class="slide-break photo-browser-close-link close-popup">跳过</span></div>'
+    }, {
+        html: '<div class="slide-box slide-5"><span class="slide-break photo-browser-close-link close-popup">跳过</span></div>'
+    }, {
+        html: '<div class="slide-box slide-7"><span class="slide-break photo-browser-close-link close-popup">跳过</span></div>'
+    }, {
+        html: '<div class="slide-box slide-6"><button class="button button-big button-round slide-break-button photo-browser-close-link close-popup">开启药市之旅</button></div>'
+    }],
+    type: 'standalone',
+    swipeToClose: false,
+    navbar: false,
+    lazyLoadingInPrevNext: true,
+    toolbar: false,
+    lazyLoading: true,
+    spaceBetween: 0
+});
+
+function showSlide() {
+    myPhotoBrowserStandalone.open();
 }
 //初始化所有接口事件
 var dataApi = data();
-setInterval(function(){
+
+dataApi.setInit();
+setInterval(function() {
     dataApi.getInitWxUser();
-},15*60*1000)
+}, 15 * 60 * 1000);
