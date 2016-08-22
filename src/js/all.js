@@ -36,10 +36,12 @@ function calenderFn(cb) {
         toolbar: true,
         rotateEffect: true,
         onOpen: function() {
-            $('#my-input').picker("setValue", time2date(sessionStorage.getItem('time')).split(' '));
+            //$('#my-input').picker("setValue", time2date(sessionStorage.getItem('time')).split(' '));
+            $('#my-input').picker("setValue", time2date(sessionStorage.getItem('time')));
         },
         onClose: function(p) {
-            var month = p.value[1].replace('月', '');
+            //var month = p.value[1].replace('月', '');
+            var month =11;
             var time = p.value[0].replace('年', '') + '-' + ((month.length < 2) ? ('0' + month) : month);
             // 时间写入session存储
             sessionStorage.setItem('time', time);
@@ -61,10 +63,10 @@ function calenderFn(cb) {
                 })()
             },
             // Months
-            {
-                values: ('01月 02月 03月 04月 05月 06月 07月 08月 09月 10月 11月 12月').split(' '),
-                textAlign: 'left'
-            }
+            //{
+            //    values: ('01月 02月 03月 04月 05月 06月 07月 08月 09月 10月 11月 12月').split(' '),
+            //    textAlign: 'left'
+            //}
         ]
     });
     // 重构日历切换方法
@@ -87,25 +89,32 @@ function calenderFn(cb) {
         var dateArray = nowDate.split(' ');
 
         dateArray[0] = dateArray[0].replace('年', '');
-        dateArray[1] = dateArray[1].replace('月', '');
+        //dateArray[1] = dateArray[1].replace('月', '');
+        //if (m > 0) {
+        //    if (dateArray[1] < 12) {
+        //        ++dateArray[1];
+        //    } else {
+        //        ++dateArray[0];
+        //        dateArray[1] = 1;
+        //    }
+        //} else {
+        //    if (dateArray[1] > 1) {
+        //        --dateArray[1];
+        //    } else {
+        //        --dateArray[0];
+        //        dateArray[1] = 12;
+        //    }
+        //}
         if (m > 0) {
-            if (dateArray[1] < 12) {
-                ++dateArray[1];
-            } else {
-                ++dateArray[0];
-                dateArray[1] = 1;
-            }
+            ++dateArray[0];
         } else {
-            if (dateArray[1] > 1) {
-                --dateArray[1];
-            } else {
-                --dateArray[0];
-                dateArray[1] = 12;
-            }
+            --dateArray[0];
         }
-        dateArray[1] = ((dateArray[1] + "").length < 2 ? ('0' + dateArray[1].toString()) : dateArray[1]);
+        //dateArray[1] = ((dateArray[1] + "").length < 2 ? ('0' + dateArray[1].toString()) : dateArray[1]);
+        dateArray[1] = 11;
         // console.log([dateArray[0]+'年', dateArray[1]+"月"]);
-        $('#my-input').picker("setValue", [dateArray[0] + "年", dateArray[1] + "月"]);
+        //$('#my-input').picker("setValue", [dateArray[0] + "年", dateArray[1] + "月"]);
+        $('#my-input').picker("setValue", [dateArray[0] + "年"]);
         dateArray = dateArray.join('-');
 
         // 格式化时间为XXXX年XX月
@@ -113,6 +122,9 @@ function calenderFn(cb) {
         $('.date-input').val(time2date(dateArray)); //时间写入页面input
         console.log($('.date-input').val(), '改变后的input真实时间');
         // 时间写入session存储
+        dateArray = dateArray.split('-');
+        dateArray=dateArray[0]+'-11';
+        console.log(dateArray);
         sessionStorage.setItem('time', dateArray);
         callback(dateArray);
     }
@@ -394,7 +406,7 @@ function state(obj) {
     return false;
 }
 // url查询字符串转换
-function url2obj(s) {
+function url2obj(s){
     var str = s.slice(1);
     str = str.split('&');
     var obj = {};
@@ -407,8 +419,9 @@ function url2obj(s) {
 //2012-12 => 2012年12月
 function time2date(t) {
     var str = t.split('-');
-    var month = str[1];
-    return str[0] + '年 ' + str[1] + '月';
+    //var month = str[1];
+    //return str[0] + '年 ' + str[1] + '月';
+    return str[0]+ '年 ';
 }
 //12月 2012年 => 2012-12
 function date2time(d) {
